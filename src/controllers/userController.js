@@ -38,5 +38,20 @@ class UserController {
       next(error);
     }
   }
+  static async getUserById(req, res, next) {
+    try {
+      const user = await UserService.getUserById(req.params.user_id);
+      if (!user)
+        return UserController.handleResponse(res, 404, "User not found");
+      UserController.handleResponse(
+        res,
+        200,
+        "User fetched successfully",
+        user
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 module.exports = UserController;

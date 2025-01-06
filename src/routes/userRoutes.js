@@ -8,5 +8,5 @@ const {
 const router = express.Router();
 
 router.get("/users", UserController.getAllUsers);
-
+router.get("/users/:user_id", UserController.getUserById);
 module.exports = router;
