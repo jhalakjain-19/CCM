@@ -95,7 +95,7 @@ class UserModel {
         Permission,
         created_on,
       } = req.body;
-
+      console.log(req.body);
       // Hash the password
       const salt = await bcrypt.genSalt(10);
       console.log(salt);
@@ -108,7 +108,7 @@ class UserModel {
       );
 
       // Return the created user
-      const createdUser = result; // result is the inserted row
+      const createdUser = result[0]; // result is the inserted row
       return createdUser;
     } catch (error) {
       console.error(error.message);
