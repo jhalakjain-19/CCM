@@ -53,5 +53,33 @@ class UserController {
       next(error);
     }
   }
+  static async deleteUser(req, res, next) {
+    try {
+      const deletedUser = await UserService.deleteUser(req.params.user_id);
+      if (!deletedUser)
+        return UserController.handleResponse(res, 404, "User not found");
+      UserController.handleResponse(
+        res,
+        200,
+        "User deleted successfully",
+        deletedUser
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async createUser(req, res) {
+    try {
+      const newUser = await UserService.createUser(req);
+      UserController.handleResponse(
+        res,
+        201,
+        "User created successfully",
+        newUser
+      );
+    } catch (error) {
+      //next(error);
+    }
+  }
 }
 module.exports = UserController;

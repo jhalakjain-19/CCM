@@ -10,6 +10,12 @@ class UserService {
   static async getUserById(userId) {
     return await UserModel.getUserById(userId);
   }
+  static async deleteUser(userId) {
+    return await UserModel.deleteUser(userId);
+  }
+  static async createUser(data) {
+    return await UserModel.createUser(data);
+  }
 }
 
 module.exports = UserService;
