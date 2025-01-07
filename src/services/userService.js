@@ -79,7 +79,7 @@ class UserService {
       console.log("Rows retrieved:", rows); // Log the rows
 
       // Continue with password comparison if data is present
-      const hashedPassword = rows.password;
+      const hashedPassword = rows[0].password;
 
       //console.log("Hashed password from DB:", hashedPassword);
       return rows[0];
