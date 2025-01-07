@@ -103,9 +103,9 @@ class UserModel {
   }
   static async updateUser(user_id, req) {
     try {
-      // Step 1: Update the user record
+      // Step 1: Update the user record and set 'updated_at' to the current timestamp
       const updateResult = await pool.query(
-        "UPDATE users SET Name = ?, Email = ? WHERE user_id = ?",
+        "UPDATE users SET Name = ?, Email = ?, updated_at = NOW() WHERE user_id = ?",
         [req.body.Name, req.body.Email, user_id]
       );
 
@@ -134,6 +134,7 @@ class UserModel {
       throw error; // Rethrow the error for higher-level handling
     }
   }
+
   // Get login query to fetch user by email
   static getLoginQuery(email) {
     const query = "SELECT * FROM users WHERE email = ? AND status = 1";
