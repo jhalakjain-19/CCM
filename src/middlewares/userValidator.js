@@ -19,8 +19,8 @@ const userUpdateSchema = Joi.object({
 
 // Schema for user login
 const userLoginSchema = Joi.object({
-  email: Joi.string().email().required(),
-  password: Joi.string().required(),
+  Email: Joi.string().email().required(),
+  Password: Joi.string().required(),
 }); // Ensure email and password fields provided for login
 
 const validateUser = (req, res, next) => {

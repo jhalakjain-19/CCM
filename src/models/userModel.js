@@ -1,4 +1,4 @@
-const pool = require("../config/db").promise();
+const pool = require("../config/db");
 const bcrypt = require("bcrypt");
 // const userCreateSchema = require("../middlewares/userValidator.js");
 class UserModel {
@@ -80,12 +80,6 @@ class UserModel {
 
   static async createUser(req) {
     try {
-      // // Validate request body using Joi schema
-      // const { error } = userCreateSchema.validate(req.body);
-      // if (error) {
-      //   throw new Error(error.details[0].message);
-      // }
-
       const {
         Name,
         Email,
@@ -146,6 +140,33 @@ class UserModel {
       // Log the error for debugging
       console.error("Error updating user:", error.message);
       throw error; // Rethrow the error for higher-level handling
+    }
+  }
+  // Get login query to fetch user by email
+  static getLoginQuery(email) {
+    const query = "SELECT * FROM users WHERE email = ? AND status = 1";
+
+    return { query, values: [email] };
+  }
+
+  // Update session token in the database
+  static async updateSessionToken(user_id, token) {
+    try {
+      const [result] = await pool.query(
+        "UPDATE users SET session_token = ? WHERE user_id = ?",
+        [token, user_id]
+      );
+
+      if (result.affectedRows === 0) {
+        console.log(`No user found with ID: ${user_id}`);
+        return null;
+      }
+
+      console.log(`Session token updated for user ID: ${user_id}`);
+      return result;
+    } catch (error) {
+      console.error("Error updating session token:", error.message);
+      throw error;
     }
   }
 }

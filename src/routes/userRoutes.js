@@ -12,5 +12,6 @@ router.get("/users/:user_id", UserController.getUserById);
 router.delete("/users/:user_id", UserController.deleteUser);
 router.post("/users", validateUser, UserController.createUser);
 router.put("/users/:user_id", validateAtUpdate, UserController.updateUser);
+router.post("/login", validateLogin, UserController.loginUser);
 
 module.exports = router;
