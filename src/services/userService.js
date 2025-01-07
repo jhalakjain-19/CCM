@@ -16,6 +16,9 @@ class UserService {
   static async createUser(data) {
     return await UserModel.createUser(data);
   }
+  static async updateUser(userId, data) {
+    return await UserModel.updateUser(userId, data);
+  }
 }
 
 module.exports = UserService;

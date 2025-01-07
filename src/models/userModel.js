@@ -115,6 +115,39 @@ class UserModel {
       throw error;
     }
   }
+  static async updateUser(user_id, req) {
+    try {
+      // Step 1: Update the user record
+      const updateResult = await pool.query(
+        "UPDATE users SET Name = ?, Email = ? WHERE user_id = ?",
+        [req.body.Name, req.body.Email, user_id]
+      );
+
+      // Log the update result for debugging
+      console.log("Update Operation Result:", updateResult);
+
+      // Step 2: Check if any row was updated
+      if (updateResult.affectedRows === 0) {
+        console.log(`No user found with ID: ${user_id}`);
+        return null; // Return null if no user was updated
+      }
+
+      // Step 3: Fetch the updated user record
+      const [updatedUser] = await pool.query(
+        "SELECT * FROM users WHERE user_id = ?",
+        [user_id]
+      );
+
+      // Log the fetched updated user data
+      console.log("Updated User Data:", updatedUser);
+
+      return updatedUser[0]; // Return the updated user
+    } catch (error) {
+      // Log the error for debugging
+      console.error("Error updating user:", error.message);
+      throw error; // Rethrow the error for higher-level handling
+    }
+  }
 }
 
 module.exports = UserModel;

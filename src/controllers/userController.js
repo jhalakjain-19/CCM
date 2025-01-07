@@ -81,5 +81,20 @@ class UserController {
       //next(error);
     }
   }
+  static async updateUser(req, res, next) {
+    try {
+      const updatedUser = await UserService.updateUser(req.params.user_id, req);
+      if (!updatedUser)
+        return UserController.handleResponse(res, 404, "User not found");
+      UserController.handleResponse(
+        res,
+        200,
+        "User updated successfully",
+        updatedUser
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 module.exports = UserController;

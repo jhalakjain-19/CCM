@@ -13,8 +13,8 @@ const userCreateSchema = Joi.object({
 
 // Schema for updating a user
 const userUpdateSchema = Joi.object({
-  name: Joi.string().min(3),
-  email: Joi.string().email(),
+  Name: Joi.string().min(3),
+  Email: Joi.string().email(),
 }); // Ensure at least one field is provided for an update
 
 // Schema for user login
