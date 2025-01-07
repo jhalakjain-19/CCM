@@ -8,7 +8,7 @@ const userCreateSchema = Joi.object({
   Password: Joi.string().required(),
   status: Joi.number().default(0).valid(0, 1),
   Permission: Joi.number().integer().required(),
-  created_on: Joi.date().default(() => new Date()),
+  //created_on: Joi.date().default(() => new Date()),
 });
 
 // Schema for updating a user

@@ -80,15 +80,7 @@ class UserModel {
 
   static async createUser(req) {
     try {
-      const {
-        Name,
-        Email,
-        Phone_no,
-        Password,
-        status,
-        Permission,
-        created_on,
-      } = req.body;
+      const { Name, Email, Phone_no, Password, status, Permission } = req.body;
       console.log(req.body);
       // Hash the password
       const salt = await bcrypt.genSalt(10);
@@ -97,8 +89,8 @@ class UserModel {
       console.log(hashedPassword);
       // Insert user data into the database
       const result = await pool.query(
-        "INSERT INTO users (Name, Email, Phone_no, Password,status, Permission,created_on) VALUES(?, ?, ?, ?, ?, ?, ?)",
-        [Name, Email, Phone_no, hashedPassword, status, Permission, created_on]
+        "INSERT INTO users (Name, Email, Phone_no, Password,status, Permission) VALUES(?, ?, ?, ?, ?, ?)",
+        [Name, Email, Phone_no, hashedPassword, status, Permission]
       );
 
       // Return the created user
