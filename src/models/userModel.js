@@ -102,13 +102,14 @@ class UserModel {
     }
   }
   static async updateUser(user_id, req) {
+    const currentTimestamp = new Date();
     try {
       // Step 1: Update the user record and set 'updated_at' to the current timestamp
       const updateResult = await pool.query(
-        "UPDATE users SET Name = ?, Email = ?, updated_at = NOW() WHERE user_id = ?",
-        [req.body.Name, req.body.Email, user_id]
+        "UPDATE users SET Name = ?, Email = ?, updated_at = ? WHERE user_id = ?",
+        [req.body.Name, req.body.Email, currentTimestamp, user_id]
       );
-
+      console.log("Updated_at" + currentTimestamp);
       // Log the update result for debugging
       console.log("Update Operation Result:", updateResult);
 
