@@ -3,6 +3,8 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes.js");
 const pool = require("./config/db.js");
+const swaggerJSDoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 const errorHandler = require("./middlewares/errorHandler.js");
 dotenv.config();
 const app = express();
@@ -12,8 +14,27 @@ const port = process.env.PORT || 8080;
 //middlewares
 app.use(cors());
 app.use(express.json());
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "CCM",
+      version: "1.0.0",
+    },
+    servers: [
+      {
+        url: "http://localhost:1106/api/",
+      },
+    ],
+  },
+  apis: ["./routes/userRoutes.js"],
+};
+const swaggerSpec = swaggerJSDoc(options);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 app.use("/api", userRoutes);
 app.use(errorHandler);
+
 //routes
 app.get("/test", (req, res) => {
   res.status(200).send("<h1>CCM</h1>");

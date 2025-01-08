@@ -84,9 +84,9 @@ class UserModel {
       console.log(req.body);
       // Hash the password
       const salt = await bcrypt.genSalt(10);
-      console.log(salt);
+      //console.log(salt);
       const hashedPassword = await bcrypt.hash(Password, salt);
-      console.log(hashedPassword);
+      //console.log(hashedPassword);
       // Insert user data into the database
       const result = await pool.query(
         "INSERT INTO users (Name, Email, Phone_no, Password,status, Permission) VALUES(?, ?, ?, ?, ?, ?)",
