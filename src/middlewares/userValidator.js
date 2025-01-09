@@ -8,6 +8,8 @@ const userCreateSchema = Joi.object({
   Password: Joi.string().required(),
   status: Joi.number().default(0).valid(0, 1),
   Permission: Joi.number().integer().required(),
+  role: Joi.array().items(Joi.number()).default([1]), // Default role as [1]
+  // role: Joi.number().required(),
   //created_on: Joi.date().default(() => new Date()),
 });
 
@@ -16,6 +18,7 @@ const userUpdateSchema = Joi.object({
   Name: Joi.string().min(3),
   Email: Joi.string().email(),
 }); // Ensure at least one field is provided for an update
+//NAME,PHONE,STATUS,PERMISSION,ROLE
 
 // Schema for user login
 const userLoginSchema = Joi.object({

@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes.js");
 const pool = require("./config/db.js");
+const { roleNames } = require("./utils/commonUtils");
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const errorHandler = require("./middlewares/errorHandler.js");
@@ -33,6 +34,7 @@ const swaggerSpec = swaggerJSDoc(options);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api", userRoutes);
+console.log(`User role is: ${roleNames[1]}`);
 app.use(errorHandler);
 
 //routes

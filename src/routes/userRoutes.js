@@ -108,12 +108,17 @@ router.delete("/users/:user_id", UserController.deleteUser);
  *                 type: integer
  *               Permission:
  *                 type: integer
+ *               role:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *                 default: [1]        # Add a space after the colon
+ *                 example: [1, 2]    # Example of roles as integers
  *     responses:
  *       201:
  *         description: User created successfully
- *       400:
- *         description: Invalid input
  */
+
 router.post("/users", validateUser, UserController.createUser);
 
 /**
