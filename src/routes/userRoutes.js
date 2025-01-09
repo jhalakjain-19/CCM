@@ -117,6 +117,8 @@ router.delete("/users/:user_id", UserController.deleteUser);
  *     responses:
  *       201:
  *         description: User created successfully
+ *       400:
+ *         description: User creation unsuccessful
  */
 
 router.post("/users", validateUser, UserController.createUser);

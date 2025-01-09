@@ -83,15 +83,28 @@ class UserModel {
       const { Name, Email, Phone_no, Password, status, Permission, role } =
         req.body;
       console.log(req.body);
-      // Hash the password
+
+      // Step 1: Check if a user with the provided email already exists in the database
+      const [existingUser] = await pool.query(
+        "SELECT * FROM users WHERE Email = ?",
+        [Email]
+      );
+
+      if (existingUser.length > 0) {
+        // If the email already exists, return an error response
+        throw new Error("Email is already in use.");
+      }
+
+      // Step 2: Hash the password if email is not duplicated
       const salt = await bcrypt.genSalt(10);
-      //console.log(salt);
       const hashedPassword = await bcrypt.hash(Password, salt);
+
+      // Step 3: Format the role (array or comma-separated string)
       const formattedRole = Array.isArray(role) ? JSON.stringify(role) : role;
-      //console.log(hashedPassword);
-      // Insert user data into the database
+
+      // Step 4: Insert the new user data into the database
       const result = await pool.query(
-        "INSERT INTO users (Name, Email, Phone_no, Password,status, Permission,role) VALUES(?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO users (Name, Email, Phone_no, Password, status, Permission, role) VALUES(?, ?, ?, ?, ?, ?, ?)",
         [
           Name,
           Email,
@@ -103,7 +116,7 @@ class UserModel {
         ]
       );
 
-      // Return the created user
+      // Return the created user (typically, you might want to send a success message instead of the full user)
       const createdUser = result[0]; // result is the inserted row
       return createdUser;
     } catch (error) {
@@ -111,6 +124,7 @@ class UserModel {
       throw error;
     }
   }
+
   static async updateUser(user_id, req) {
     const currentTimestamp = new Date();
     try {
