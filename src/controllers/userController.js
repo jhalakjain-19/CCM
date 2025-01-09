@@ -1,4 +1,5 @@
 const UserService = require("../services/userService");
+// const { passwordResetSchema } = require("../middlewares/userValidator");
 
 class UserController {
   static handleResponse(res, status, message, data = null) {
@@ -107,6 +108,32 @@ class UserController {
       );
     } catch (error) {
       next(error);
+    }
+  }
+  // API to change the password
+  static async changePassword(req, res) {
+    const { user_id } = req.params; // Assuming user_id is passed as a URL parameter
+    const { currentPassword, newPassword } = req.body; // Extract passwords from request body
+
+    // // Step 1: Validate input with Joi
+    // const { error } = passwordResetSchema.validate(req.body);
+    // if (error) {
+    //   return res.status(400).json({ message: error.details[0].message });
+    // }
+
+    try {
+      // Step 2: Call the service method to change the password
+      const result = await UserService.changePassword(
+        user_id,
+        currentPassword,
+        newPassword
+      );
+
+      // Step 3: Return success response
+      return res.status(200).json({ message: result });
+    } catch (error) {
+      console.error("Error in UserController:", error.message);
+      return res.status(500).json({ message: error.message });
     }
   }
 }

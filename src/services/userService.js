@@ -88,6 +88,20 @@ class UserService {
       throw error;
     }
   }
+  // Call the changePassword function from UserModel
+  static async changePassword(user_id, currentPassword, newPassword) {
+    try {
+      const result = await UserModel.changePassword(
+        user_id,
+        currentPassword,
+        newPassword
+      );
+      return result; // Returning success message
+    } catch (error) {
+      console.error("Error in UserService:", error.message);
+      throw error;
+    }
+  }
 }
 
 module.exports = UserService;

@@ -4,6 +4,7 @@ const {
   validateUser,
   validateAtUpdate,
   validateLogin,
+  validatePasswordReset,
 } = require("../middlewares/userValidator");
 const router = express.Router();
 
@@ -147,8 +148,7 @@ router.post("/users", validateUser, UserController.createUser);
  *                 type: string
  *               Phone_no:
  *                 type: string
- *               Password:
- *                 type: string
+ *
  *               status:
  *                 type: integer
  *               Permission:
@@ -192,5 +192,47 @@ router.put("/users/:user_id", validateAtUpdate, UserController.updateUser);
  *         description: Invalid credentials
  */
 router.post("/login", validateLogin, UserController.loginUser);
+
+/**
+ * @swagger
+ * /users/{user_id}/change-password:
+ *   put:
+ *     summary: Change a user's password
+ *     description: Allows a user to change their password by providing the current password and a new password.
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         description: ID of the user whose password is being changed.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *
+ *               newPassword:
+ *                 type: string
+ *
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *       400:
+ *         description: Invalid input, password validation failed
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.put(
+  "/users/:user_id/change-password",
+  validatePasswordReset,
+  UserController.changePassword
+);
 
 module.exports = router;

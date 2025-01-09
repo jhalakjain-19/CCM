@@ -80,8 +80,17 @@ class UserModel {
 
   static async createUser(req) {
     try {
-      const { Name, Email, Phone_no, Password, status, Permission, role } =
-        req.body;
+      const currentTimestamp = new Date();
+      const {
+        Name,
+        Email,
+        Phone_no,
+        Password,
+        status,
+        Permission,
+        created_on,
+        role,
+      } = req.body;
       console.log(req.body);
 
       // Step 1: Check if a user with the provided email already exists in the database
@@ -104,7 +113,7 @@ class UserModel {
 
       // Step 4: Insert the new user data into the database
       const result = await pool.query(
-        "INSERT INTO users (Name, Email, Phone_no, Password, status, Permission, role) VALUES(?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO users (Name, Email, Phone_no, Password, status, Permission,created_on, role) VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
         [
           Name,
           Email,
@@ -112,6 +121,7 @@ class UserModel {
           hashedPassword,
           status,
           Permission,
+          currentTimestamp,
           formattedRole,
         ]
       );
@@ -126,8 +136,8 @@ class UserModel {
   }
 
   static async updateUser(user_id, req) {
-    const currentTimestamp = new Date();
     try {
+      const currentTimestamp = new Date();
       // Step 1: Update the user record and set 'updated_at' to the current timestamp
       const updateResult = await pool.query(
         "UPDATE users SET Name = ?, Phone_no = ?, status = ?, Permission = ?, role = ?, updated_at = ? WHERE user_id = ?",
@@ -193,6 +203,45 @@ class UserModel {
       return result;
     } catch (error) {
       console.error("Error updating session token:", error.message);
+      throw error;
+    }
+  }
+  // Function to change the user's password
+  static async changePassword(user_id, currentPassword, newPassword) {
+    try {
+      // Step 1: Fetch the user record from the database using the user_id
+      const [user] = await pool.query("SELECT * FROM users WHERE user_id = ?", [
+        user_id,
+      ]);
+
+      if (!user || user.length === 0) {
+        throw new Error("User not found");
+      }
+
+      // Step 2: Compare the current password with the stored password
+      const isMatch = await bcrypt.compare(currentPassword, user[0].Password);
+      if (!isMatch) {
+        throw new Error("Current password is incorrect");
+      }
+
+      // Step 3: Hash the new password
+      const salt = await bcrypt.genSalt(10);
+      const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+      // Step 4: Update the password in the database
+      const updateResult = await pool.query(
+        "UPDATE users SET Password = ?, updated_at = ? WHERE user_id = ?",
+        [hashedNewPassword, new Date(), user_id]
+      );
+
+      if (updateResult.affectedRows === 0) {
+        throw new Error("Failed to update password");
+      }
+
+      // Return a success message
+      return "Password updated successfully";
+    } catch (error) {
+      console.error("Error changing password:", error.message);
       throw error;
     }
   }

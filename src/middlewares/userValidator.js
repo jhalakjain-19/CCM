@@ -30,6 +30,11 @@ const userLoginSchema = Joi.object({
   Password: Joi.string().required(),
 }); // Ensure email and password fields provided for login
 
+const passwordResetSchema = Joi.object({
+  currentPassword: Joi.string().required(),
+  newPassword: Joi.string().required(),
+});
+
 const validateUser = (req, res, next) => {
   const { error } = userCreateSchema.validate(req.body);
   if (error) {
@@ -62,9 +67,20 @@ const validateLogin = (req, res, next) => {
   }
   next();
 };
+const validatePasswordReset = (req, res, next) => {
+  const { error } = passwordResetSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({
+      status: 400,
+      message: error.details[0].message,
+    });
+  }
+  next();
+};
 
 module.exports = {
   validateUser,
   validateAtUpdate,
   validateLogin,
+  validatePasswordReset,
 };
