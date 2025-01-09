@@ -16,7 +16,11 @@ const userCreateSchema = Joi.object({
 // Schema for updating a user
 const userUpdateSchema = Joi.object({
   Name: Joi.string().min(3),
-  Email: Joi.string().email(),
+  Phone_no: Joi.string().required(), // 10-15 digits
+  status: Joi.number().default(0).valid(0, 1),
+  Permission: Joi.number().integer().required(),
+  role: Joi.array().items(Joi.number()).default([1]), // Default role as [1]
+  // Email: Joi.string().email(),
 }); // Ensure at least one field is provided for an update
 //NAME,PHONE,STATUS,PERMISSION,ROLE
 

@@ -130,10 +130,19 @@ class UserModel {
     try {
       // Step 1: Update the user record and set 'updated_at' to the current timestamp
       const updateResult = await pool.query(
-        "UPDATE users SET Name = ?, Email = ?, updated_at = ? WHERE user_id = ?",
-        [req.body.Name, req.body.Email, currentTimestamp, user_id]
+        "UPDATE users SET Name = ?, Phone_no = ?, status = ?, Permission = ?, role = ?, updated_at = ? WHERE user_id = ?",
+        [
+          req.body.Name,
+          req.body.Phone_no,
+          req.body.status,
+          req.body.Permission,
+          JSON.stringify(req.body.role), // Assuming 'role' is passed as an array
+          currentTimestamp,
+          user_id,
+        ]
       );
-      console.log("Updated_at" + currentTimestamp);
+      console.log("Updated_at", currentTimestamp);
+
       // Log the update result for debugging
       console.log("Update Operation Result:", updateResult);
 

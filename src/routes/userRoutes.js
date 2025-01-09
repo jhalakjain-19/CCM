@@ -145,8 +145,20 @@ router.post("/users", validateUser, UserController.createUser);
  *             properties:
  *               Name:
  *                 type: string
- *               Email:
+ *               Phone_no:
  *                 type: string
+ *               Password:
+ *                 type: string
+ *               status:
+ *                 type: integer
+ *               Permission:
+ *                 type: integer
+ *               role:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *                 default: [1]        # Add a space after the colon
+ *                 example: [1, 2]    # Example of roles as integers
  *
  *     responses:
  *       200:
