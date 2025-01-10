@@ -7,7 +7,7 @@ const { JWT_SECRET } = process.env;
 class UserService {
   static async getAllUsers() {
     // console.log("Accessing getAllUsers:", UserModel.getAllUsers());
-    console.log(UserModel);
+    //console.log(UserModel);
     return await UserModel.getAllUsers();
   }
   static async getUserById(userId) {
@@ -30,7 +30,7 @@ class UserService {
         password: userData.Password,
       };
 
-      console.log("Normalized userData:", normalizedUserData);
+      //console.log("Normalized userData:", normalizedUserData);
 
       // Check if the user exists by email
       const user = await this.validateUser(normalizedUserData);
@@ -66,8 +66,8 @@ class UserService {
     const { query, values } = UserModel.getLoginQuery(userData.email);
 
     try {
-      console.log("Executing query:", query);
-      console.log("With values:", values);
+      //console.log("Executing query:", query);
+      //console.log("With values:", values);
 
       const [rows] = await pool.query(query, values);
 
@@ -76,7 +76,7 @@ class UserService {
         return null;
       }
 
-      console.log("Rows retrieved:", rows); // Log the rows
+      //console.log("Rows retrieved:", rows); // Log the rows
 
       // Continue with password comparison if data is present
       const hashedPassword = rows[0].password;

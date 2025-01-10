@@ -28,7 +28,7 @@ class UserController {
     // return 1;
     try {
       const users = await UserService.getAllUsers();
-      console.log(users);
+      //console.log(users);
       UserController.handleResponse(
         res,
         200,

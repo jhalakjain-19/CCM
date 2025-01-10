@@ -8,7 +8,7 @@ class UserModel {
       const results = await pool.query("SELECT * FROM users");
 
       // Log the results for debugging
-      console.log("Query Results:", results);
+      //console.log("Query Results:", results);
 
       // Return the results
       return results;
@@ -28,7 +28,7 @@ class UserModel {
       );
 
       // Log the result for debugging
-      console.log("Query Result:", result);
+      //console.log("Query Result:", result);
 
       // Check if the user is found
       if (result && result.length > 0) {
@@ -58,7 +58,7 @@ class UserModel {
       }
 
       // Log the fetched user data
-      console.log("Fetched User Data:", userResult[0]);
+      //console.log("Fetched User Data:", userResult[0]);
 
       // Step 2: Delete the user
       const [deleteResult] = await pool.query(
@@ -67,7 +67,7 @@ class UserModel {
       );
 
       // Log the delete result
-      console.log("Delete Operation Result:", deleteResult);
+      //console.log("Delete Operation Result:", deleteResult);
 
       // Step 3: Return the deleted user's data
       return userResult[0];
@@ -91,7 +91,7 @@ class UserModel {
         created_on,
         role,
       } = req.body;
-      console.log(req.body);
+      //console.log(req.body);
 
       // Step 1: Check if a user with the provided email already exists in the database
       const [existingUser] = await pool.query(
@@ -154,7 +154,7 @@ class UserModel {
       console.log("Updated_at", currentTimestamp);
 
       // Log the update result for debugging
-      console.log("Update Operation Result:", updateResult);
+      //console.log("Update Operation Result:", updateResult);
 
       // Step 2: Check if any row was updated
       if (updateResult.affectedRows === 0) {
@@ -169,7 +169,7 @@ class UserModel {
       );
 
       // Log the fetched updated user data
-      console.log("Updated User Data:", updatedUser);
+      //console.log("Updated User Data:", updatedUser);
 
       return updatedUser[0]; // Return the updated user
     } catch (error) {
@@ -199,7 +199,7 @@ class UserModel {
         return null;
       }
 
-      console.log(`Session token updated for user ID: ${user_id}`);
+      //console.log(`Session token updated for user ID: ${user_id}`);
       return result;
     } catch (error) {
       console.error("Error updating session token:", error.message);
