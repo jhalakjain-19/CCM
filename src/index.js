@@ -24,7 +24,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:1106/api/",
+        url: `http://localhost:${port}/api/`,
       },
     ],
   },
