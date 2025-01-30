@@ -1,5 +1,5 @@
 {
-  "name": "src",
+  "name": "ccm-api",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {

@@ -105,16 +105,7 @@ router.delete("/users/:user_id", UserController.deleteUser);
  *                 type: string
  *               Password:
  *                 type: string
- *               status:
- *                 type: integer
- *               Permission:
- *                 type: integer
- *               role:
- *                 type: array
- *                 items:
- *                   type: integer
- *                 default: [1]        # Add a space after the colon
- *                 example: [1, 2]    # Example of roles as integers
+ *
  *     responses:
  *       201:
  *         description: User created successfully
@@ -149,16 +140,7 @@ router.post("/users", validateUser, UserController.createUser);
  *               Phone_no:
  *                 type: string
  *
- *               status:
- *                 type: integer
- *               Permission:
- *                 type: integer
- *               role:
- *                 type: array
- *                 items:
- *                   type: integer
- *                 default: [1]        # Add a space after the colon
- *                 example: [1, 2]    # Example of roles as integers
+ *
  *
  *     responses:
  *       200:

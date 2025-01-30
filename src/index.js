@@ -11,9 +11,13 @@ dotenv.config();
 const app = express();
 //PORT
 const port = process.env.PORT || 8080;
+// Swagger Server URL
+// process.env.SWAGGER_SERVER_URL ||
+const swaggerServerUrl = process.env.SWAGGER_SERVER_URL;
 
 //middlewares
-app.use(cors());
+app.use(cors({}));
+
 app.use(express.json());
 const options = {
   definition: {
@@ -24,7 +28,7 @@ const options = {
     },
     servers: [
       {
-        url: `http://localhost:${port}/api/`,
+        url: swaggerServerUrl,
       },
     ],
   },

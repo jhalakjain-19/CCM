@@ -30,7 +30,7 @@ class UserService {
         password: userData.Password,
       };
 
-      //console.log("Normalized userData:", normalizedUserData);
+      console.log("Normalized userData:", normalizedUserData);
 
       // Check if the user exists by email
       const user = await this.validateUser(normalizedUserData);

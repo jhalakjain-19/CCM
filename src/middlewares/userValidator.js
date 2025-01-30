@@ -4,11 +4,11 @@ const Joi = require("joi");
 const userCreateSchema = Joi.object({
   Name: Joi.string().min(3).required(),
   Email: Joi.string().email().required(),
-  Phone_no: Joi.string().required(), // 10-15 digits
+  Phone_no: Joi.string().max(15).required(), // 10-15 digits
   Password: Joi.string().required(),
-  status: Joi.number().default(0).valid(0, 1),
-  Permission: Joi.number().integer().required(),
-  role: Joi.array().items(Joi.number()).default([1]), // Default role as [1]
+  // status: Joi.number().default(0).valid(0, 1),
+  // Permission: Joi.number().integer().required(),
+  // role: Joi.array().items(Joi.number()).default([1]), // Default role as [1]
   // role: Joi.number().required(),
   //created_on: Joi.date().default(() => new Date()),
 });
@@ -17,9 +17,9 @@ const userCreateSchema = Joi.object({
 const userUpdateSchema = Joi.object({
   Name: Joi.string().min(3),
   Phone_no: Joi.string().required(), // 10-15 digits
-  status: Joi.number().default(0).valid(0, 1),
-  Permission: Joi.number().integer().required(),
-  role: Joi.array().items(Joi.number()).default([1]), // Default role as [1]
+  // status: Joi.number().default(0).valid(0, 1),
+  // Permission: Joi.number().integer().required(),
+  // role: Joi.array().items(Joi.number()).default([1]), // Default role as [1]
   // Email: Joi.string().email(),
 }); // Ensure at least one field is provided for an update
 //NAME,PHONE,STATUS,PERMISSION,ROLE

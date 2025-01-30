@@ -8,7 +8,7 @@ class UserModel {
       const results = await pool.query("SELECT * FROM users");
 
       // Log the results for debugging
-      //console.log("Query Results:", results);
+      console.log("Query Results:", results);
 
       // Return the results
       return results;
@@ -28,7 +28,7 @@ class UserModel {
       );
 
       // Log the result for debugging
-      //console.log("Query Result:", result);
+      console.log("Query Result:", result);
 
       // Check if the user is found
       if (result && result.length > 0) {
@@ -58,7 +58,7 @@ class UserModel {
       }
 
       // Log the fetched user data
-      //console.log("Fetched User Data:", userResult[0]);
+      console.log("Fetched User Data:", userResult[0]);
 
       // Step 2: Delete the user
       const [deleteResult] = await pool.query(
@@ -67,7 +67,7 @@ class UserModel {
       );
 
       // Log the delete result
-      //console.log("Delete Operation Result:", deleteResult);
+      console.log("Delete Operation Result:", deleteResult);
 
       // Step 3: Return the deleted user's data
       return userResult[0];
@@ -81,17 +81,8 @@ class UserModel {
   static async createUser(req) {
     try {
       const currentTimestamp = new Date();
-      const {
-        Name,
-        Email,
-        Phone_no,
-        Password,
-        status,
-        Permission,
-        created_on,
-        role,
-      } = req.body;
-      //console.log(req.body);
+      const { Name, Email, Phone_no, Password, created_on } = req.body;
+      console.log(req.body);
 
       // Step 1: Check if a user with the provided email already exists in the database
       const [existingUser] = await pool.query(
@@ -109,21 +100,12 @@ class UserModel {
       const hashedPassword = await bcrypt.hash(Password, salt);
 
       // Step 3: Format the role (array or comma-separated string)
-      const formattedRole = Array.isArray(role) ? JSON.stringify(role) : role;
+      // const formattedRole = Array.isArray(role) ? JSON.stringify(role) : role;
 
       // Step 4: Insert the new user data into the database
       const result = await pool.query(
-        "INSERT INTO users (Name, Email, Phone_no, Password, status, Permission,created_on, role) VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
-        [
-          Name,
-          Email,
-          Phone_no,
-          hashedPassword,
-          status,
-          Permission,
-          currentTimestamp,
-          formattedRole,
-        ]
+        "INSERT INTO users (Name, Email, Phone_no, Password, created_on) VALUES(?, ?, ?, ?, ?)",
+        [Name, Email, Phone_no, hashedPassword, currentTimestamp]
       );
 
       // Return the created user (typically, you might want to send a success message instead of the full user)
@@ -140,21 +122,13 @@ class UserModel {
       const currentTimestamp = new Date();
       // Step 1: Update the user record and set 'updated_at' to the current timestamp
       const updateResult = await pool.query(
-        "UPDATE users SET Name = ?, Phone_no = ?, status = ?, Permission = ?, role = ?, updated_at = ? WHERE user_id = ?",
-        [
-          req.body.Name,
-          req.body.Phone_no,
-          req.body.status,
-          req.body.Permission,
-          JSON.stringify(req.body.role), // Assuming 'role' is passed as an array
-          currentTimestamp,
-          user_id,
-        ]
+        "UPDATE users SET Name = ?, Phone_no = ?, updated_at = ? WHERE user_id = ?",
+        [req.body.Name, req.body.Phone_no, currentTimestamp, user_id]
       );
       console.log("Updated_at", currentTimestamp);
 
       // Log the update result for debugging
-      //console.log("Update Operation Result:", updateResult);
+      console.log("Update Operation Result:", updateResult);
 
       // Step 2: Check if any row was updated
       if (updateResult.affectedRows === 0) {
@@ -169,7 +143,7 @@ class UserModel {
       );
 
       // Log the fetched updated user data
-      //console.log("Updated User Data:", updatedUser);
+      console.log("Updated User Data:", updatedUser);
 
       return updatedUser[0]; // Return the updated user
     } catch (error) {
@@ -199,7 +173,7 @@ class UserModel {
         return null;
       }
 
-      //console.log(`Session token updated for user ID: ${user_id}`);
+      console.log(`Session token updated for user ID: ${user_id}`);
       return result;
     } catch (error) {
       console.error("Error updating session token:", error.message);
