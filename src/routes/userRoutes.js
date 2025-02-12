@@ -216,16 +216,121 @@ router.put(
   validatePasswordReset,
   UserController.changePassword
 );
-//Route to get permission by user_id
+// //Route to get permission by user_id
+// router.get(
+//   "/users/getPermission/:user_id",
+//   UserController.getPermissionByUserId
+// );
+
+// // Route to set permission by user ID
+// router.put(
+//   "/users/setPermission/:user_id",
+//   UserController.setPermissionByUserId
+// );
+// router.get("/permissions", UserController.getAllPermissions);
+/**
+ * @swagger
+ * /users/getPermission/{user_id}:
+ *   get:
+ *     summary: Get permissions by user ID
+ *     description: Retrieve the permissions assigned to a specific user.
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         description: The user's ID
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved user permissions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       400:
+ *         description: Bad request, missing or invalid user ID
+ *       404:
+ *         description: No permissions found for this user
+ */
 router.get(
   "/users/getPermission/:user_id",
   UserController.getPermissionByUserId
 );
-
-// Route to set permission by user ID
+/**
+ * @swagger
+ * /users/setPermission/{user_id}:
+ *   put:
+ *     summary: Set permissions for a user ID
+ *     description: Assign or update permissions for a specific user by user ID.
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         description: The user's ID
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               permission:
+ *                 type: string
+ *                 items:
+ *                   type: integer
+ *                 example: "1,3"
+ *     responses:
+ *       200:
+ *         description: User permissions updated successfully
+ *       400:
+ *         description: Invalid request or missing data
+ *       404:
+ *         description: User not found
+ */
 router.put(
   "/users/setPermission/:user_id",
   UserController.setPermissionByUserId
 );
+/**
+ * @swagger
+ * /permissions:
+ *   get:
+ *     summary: Get all permissions
+ *     description: Retrieve a list of all available permissions from the modules table.
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved all permissions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       Permission:
+ *                         type: string
+ *                       status:
+ *                         type: integer
+ *       404:
+ *         description: No permissions found
+ */
+router.get("/permissions", UserController.getAllPermissions);
 
 module.exports = router;

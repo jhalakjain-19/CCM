@@ -240,6 +240,15 @@ class UserModel {
       throw error;
     }
   }
+  static async getAllPermissions() {
+    try {
+      const [result] = await pool.query(`SELECT id,Permission FROM Module`);
+      return result;
+    } catch (error) {
+      console.error("Error fetching permissions from DB:", error.message);
+      throw error;
+    }
+  }
 }
 
 module.exports = UserModel;

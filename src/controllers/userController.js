@@ -202,5 +202,21 @@ class UserController {
       next(error);
     }
   }
+  static async getAllPermissions(req, res, next) {
+    try {
+      const permissions = await UserService.getAllPermissions();
+
+      if (!permissions || permissions.length === 0) {
+        return res.status(404).json({ error: "No permissions found." });
+      }
+
+      res.status(200).json({
+        message: "Permissions fetched successfully",
+        data: permissions,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 module.exports = UserController;
