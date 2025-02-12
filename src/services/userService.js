@@ -39,7 +39,7 @@ class UserService {
         throw new Error("Email or Password is incorrect!");
       }
 
-      // Check if the user is verified and active
+      // ✅ Check if the user is active (status === 1)
       if (user.status !== 1) {
         throw new Error(
           "Your authentication is blocked, please contact the administrator."
@@ -101,6 +101,12 @@ class UserService {
       console.error("Error in UserService:", error.message);
       throw error;
     }
+  }
+  static async getPermissionByUserId(userId) {
+    return await UserModel.getPermissionByUserId(userId);
+  }
+  static async setPermissionByUserId(userId, permission) {
+    return await UserModel.setPermissionByUserId(userId, permission);
   }
 }
 

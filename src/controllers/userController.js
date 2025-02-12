@@ -100,6 +100,18 @@ class UserController {
   static async loginUser(req, res, next) {
     try {
       const login = await UserService.loginUser(req, req.body);
+
+      console.log("🔍 Final Login Response:", login);
+
+      if (!login || login.status !== 1) {
+        console.log("❌ Blocked user detected!");
+        return UserController.handleResponse(
+          res,
+          403,
+          "Your authentication is blocked, please contact the administrator."
+        );
+      }
+
       UserController.handleResponse(
         res,
         200,
@@ -110,6 +122,7 @@ class UserController {
       next(error);
     }
   }
+
   // API to change the password
   static async changePassword(req, res) {
     const { user_id } = req.params; // Assuming user_id is passed as a URL parameter
@@ -134,6 +147,59 @@ class UserController {
     } catch (error) {
       console.error("Error in UserController:", error.message);
       return res.status(500).json({ message: error.message });
+    }
+  }
+  static async getPermissionByUserId(req, res, next) {
+    try {
+      const { user_id } = req.params;
+
+      if (!user_id) {
+        return res.status(400).json({ error: "User ID is required." });
+      }
+
+      const permission = await UserService.getPermissionByUserId(user_id);
+
+      if (!permission) {
+        return res
+          .status(404)
+          .json({ error: "No permission found for this user." });
+      }
+
+      res.status(200).json({
+        message: "Permission fetched successfully",
+        data: permission,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async setPermissionByUserId(req, res, next) {
+    try {
+      const { user_id } = req.params;
+      const { permission } = req.body;
+
+      if (!user_id || !permission) {
+        return res
+          .status(400)
+          .json({ error: "User ID and permission are required." });
+      }
+
+      const isUpdated = await UserService.setPermissionByUserId(
+        user_id,
+        permission
+      );
+
+      if (!isUpdated) {
+        return res
+          .status(404)
+          .json({ error: "User not found or permission not updated." });
+      }
+
+      res.status(200).json({
+        message: "Permission updated successfully",
+      });
+    } catch (error) {
+      next(error);
     }
   }
 }

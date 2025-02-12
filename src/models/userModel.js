@@ -4,16 +4,11 @@ const bcrypt = require("bcrypt");
 class UserModel {
   static async getAllUsers() {
     try {
-      // Execute the query and wait for the results
-      const results = await pool.query("SELECT * FROM users");
-
-      // Log the results for debugging
-      console.log("Query Results:", results);
-
-      // Return the results
-      return results;
+      const [results] = await pool.query(
+        "SELECT user_id,Name,Email,Phone_no,status,permission,created_on,updated_at FROM users"
+      );
+      return results; // Extract only the first element (actual data)
     } catch (error) {
-      // Log and rethrow the error for further handling
       console.error("Error fetching users:", error.message);
       throw error;
     }
@@ -216,6 +211,32 @@ class UserModel {
       return "Password updated successfully";
     } catch (error) {
       console.error("Error changing password:", error.message);
+      throw error;
+    }
+  }
+  static async getPermissionByUserId(userId) {
+    try {
+      const [result] = await pool.query(
+        `SELECT permission FROM users
+             WHERE user_id = ?`,
+        [userId]
+      );
+      return result;
+    } catch (error) {
+      console.error("Error fetching permissions from DB:", error.message);
+      throw error;
+    }
+  }
+  static async setPermissionByUserId(userId, permission) {
+    try {
+      const [result] = await pool.query(
+        `UPDATE users SET permission = ? WHERE user_id = ?`,
+        [permission, userId]
+      );
+
+      return result.affectedRows > 0; // Returns true if at least one row was updated
+    } catch (error) {
+      console.error("Error updating permission in DB:", error.message);
       throw error;
     }
   }

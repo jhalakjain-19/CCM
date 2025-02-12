@@ -216,5 +216,16 @@ router.put(
   validatePasswordReset,
   UserController.changePassword
 );
+//Route to get permission by user_id
+router.get(
+  "/users/getPermission/:user_id",
+  UserController.getPermissionByUserId
+);
+
+// Route to set permission by user ID
+router.put(
+  "/users/setPermission/:user_id",
+  UserController.setPermissionByUserId
+);
 
 module.exports = router;
