@@ -332,5 +332,39 @@ router.put(
  *         description: No permissions found
  */
 router.get("/permissions", UserController.getAllPermissions);
+//Route to set status by user_id
+/**
+ * @swagger
+ * /users/setStatus/{user_id}:
+ *   put:
+ *     summary: Update user status
+ *     description: Set or update the status of a specific user.
+ *     parameters:
+ *       - in: path
+ *         name: user_id
+ *         required: true
+ *         description: The user's ID
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: integer
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: User status updated successfully
+ *       400:
+ *         description: Invalid request, missing user ID or status
+ *       404:
+ *         description: User not found
+ */
+
+router.put("/users/setStatus/:user_id", UserController.setStatusByUserId);
 
 module.exports = router;

@@ -104,6 +104,9 @@ class UserService {
   static async getAllPermissions() {
     return await UserModel.getAllPermissions();
   }
+  static async setStatusByUserId(userId, status) {
+    return await UserModel.setStatusByUserId(userId, status);
+  }
 }
 
 module.exports = UserService;

@@ -218,5 +218,29 @@ class UserController {
       next(error);
     }
   }
+  static async setStatusByUserId(req, res, next) {
+    try {
+      const { user_id } = req.params;
+      const { status } = req.body;
+
+      if (!user_id || status === undefined) {
+        return res
+          .status(400)
+          .json({ error: "User ID and status are required." });
+      }
+
+      const result = await UserService.setStatusByUserId(user_id, status);
+
+      if (!result) {
+        return res
+          .status(404)
+          .json({ error: "User not found or update failed." });
+      }
+
+      res.status(200).json({ message: "User status updated successfully" });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 module.exports = UserController;

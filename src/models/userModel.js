@@ -249,6 +249,19 @@ class UserModel {
       throw error;
     }
   }
+  static async setStatusByUserId(userId, status) {
+    try {
+      const [result] = await pool.query(
+        `UPDATE users SET status = ? WHERE user_id = ?`,
+        [status, userId]
+      );
+
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error("Error updating user status:", error.message);
+      throw error;
+    }
+  }
 }
 
 module.exports = UserModel;
