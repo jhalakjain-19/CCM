@@ -103,14 +103,14 @@ class UserController {
 
       console.log("🔍 Final Login Response:", login);
 
-      if (!login || login.status !== 1) {
-        console.log("❌ Blocked user detected!");
-        return UserController.handleResponse(
-          res,
-          403,
-          "Your authentication is blocked, please contact the administrator."
-        );
-      }
+      // if (!login ) {
+      //   console.log("❌ Blocked user detected!");
+      //   return UserController.handleResponse(
+      //     res,
+      //     403,
+      //     "Your authentication is blocked, please contact the administrator."
+      //   );
+      // }
 
       UserController.handleResponse(
         res,

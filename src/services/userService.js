@@ -36,14 +36,7 @@ class UserService {
       const user = await this.validateUser(normalizedUserData);
 
       if (!user) {
-        throw new Error("Email or Password is incorrect!");
-      }
-
-      // ✅ Check if the user is active (status === 1)
-      if (user.status !== 1) {
-        throw new Error(
-          "Your authentication is blocked, please contact the administrator."
-        );
+        throw new Error("access blocked");
       }
 
       // Generate JWT token
