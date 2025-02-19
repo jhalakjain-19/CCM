@@ -234,5 +234,14 @@ class UserController {
       next(error);
     }
   }
+  static async forgotPassword(req, res) {
+    const { Email } = req.body;
+    try {
+      const result = await UserService.forgotPassword(Email);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
 }
 module.exports = UserController;

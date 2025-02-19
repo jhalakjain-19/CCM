@@ -1,5 +1,7 @@
 const pool = require("../config/db");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = process.env;
 // const userCreateSchema = require("../middlewares/userValidator.js");
 class UserModel {
   static async getAllUsers() {
@@ -159,7 +161,33 @@ class UserModel {
       throw error;
     }
   }
+  static async generateResetToken(user) {
+    if (!user) {
+      throw new Error("Invalid user object or email");
+    }
+    console.log("User found:", user);
 
+    try {
+      console.log("Generating reset token for user:", user[0].Email);
+      // Generate a JWT token
+      const token = jwt.sign(
+        { Email: user[0].Email },
+        JWT_SECRET,
+        { expiresIn: "1h" } // Token expires in 1 hour
+      );
+
+      // Store the token in the database
+      await pool.query(`UPDATE users SET reset_token = ? WHERE email = ?`, [
+        token,
+        user[0].Email,
+      ]);
+
+      return token;
+    } catch (error) {
+      console.error(error.message);
+      throw new Error("Error generating token");
+    }
+  }
   static async updateSessionToken(user_id, token) {
     try {
       const [result] = await pool.execute(
