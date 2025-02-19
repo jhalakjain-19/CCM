@@ -22,65 +22,67 @@ class UserService {
   static async updateUser(userId, data) {
     return await UserModel.updateUser(userId, data);
   }
+
   static async loginUser(req, userData) {
-    try {
-      // Normalize userData keys to match expected keys
-      const normalizedUserData = {
-        email: userData.Email, // Adjust casing
-        password: userData.Password,
-      };
+    // Check if the user exists by phone
+    const user = await this.validateUser(req, userData);
 
-      console.log("Normalized userData:", normalizedUserData);
-
-      // Check if the user exists by email
-      const user = await this.validateUser(normalizedUserData);
-
-      if (!user) {
-        throw new Error("access blocked");
-      }
-
-      // Generate JWT token
-      const token = jwt.sign({ user_id: user.user_id }, JWT_SECRET, {
-        expiresIn: "1h",
-      });
-
-      // Update session token in the database
-      await UserModel.updateSessionToken(user.user_id, token);
-
-      return { msg: "Login successful!", token };
-    } catch (error) {
-      console.error("Error in loginUser:", error.message);
-      throw error;
+    if (!user) {
+      throw new Error("Email or Password is incorrect!");
     }
+
+    // Check if the user is verified and active
+    if (user.status !== 1) {
+      throw new Error(
+        "Your authentication is blocked, please contact the administrator."
+      );
+    }
+
+    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "1h" });
+
+    // Update session token in the database
+    await UserModel.updateSessionToken(user.user_id, token);
+
+    return { msg: "Login successful!", token };
+  }
+  // Validate user by email
+  static async validateUser(req, userData) {
+    // Extract email from req.body
+    const { Email, Password } = userData;
+
+    console.log("Received request body:", req.body);
+
+    if (!Email || !Password) {
+      console.error("Missing email or password in request body!");
+      throw new Error("Email and password are required");
+    }
+
+    console.log("Validating user:", Email);
+    const users = await UserModel.getUserByEmail(Email);
+
+    if (!users || users.length === 0) {
+      console.log("User not found:", users);
+      return null; // User doesn't exist
+    }
+
+    const user = users[0]; // Extract the first user object
+    console.log("User found:", user);
+
+    if (!user.Password) {
+      console.log("Password missing in DB:", user);
+      return null; // Password is missing
+    }
+
+    // Compare hashed passwords
+    const validPassword = await bcrypt.compare(Password, user.Password);
+    if (!validPassword) {
+      console.log("Invalid password for user:", Email);
+      return null; // Incorrect password
+    }
+
+    return user;
   }
 
-  // Validate user by email and password
-  static async validateUser(userData) {
-    const { query, values } = UserModel.getLoginQuery(userData.email);
-
-    try {
-      //console.log("Executing query:", query);
-      //console.log("With values:", values);
-
-      const [rows] = await pool.query(query, values);
-
-      if (!Array.isArray(rows) || rows.length === 0) {
-        console.log("No user found with the provided email.");
-        return null;
-      }
-
-      //console.log("Rows retrieved:", rows); // Log the rows
-
-      // Continue with password comparison if data is present
-      const hashedPassword = rows[0].password;
-
-      //console.log("Hashed password from DB:", hashedPassword);
-      return rows[0];
-    } catch (error) {
-      console.error("Error during query execution:", error.message);
-      throw error;
-    }
-  }
   // Call the changePassword function from UserModel
   static async changePassword(user_id, currentPassword, newPassword) {
     try {

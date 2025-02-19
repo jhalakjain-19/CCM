@@ -149,29 +149,26 @@ class UserModel {
   }
 
   // Get login query to fetch user by email
-  static getLoginQuery(email) {
-    const query = "SELECT * FROM users WHERE email = ? AND status = 1";
-
-    return { query, values: [email] };
+  static async getUserByEmail(email) {
+    const query = "SELECT * FROM users WHERE Email = ?";
+    try {
+      const [user] = await pool.query(query, [email]);
+      return user;
+    } catch (error) {
+      console.error("Error fetching user by email:", error.message);
+      throw error;
+    }
   }
 
-  // Update session token in the database
   static async updateSessionToken(user_id, token) {
     try {
-      const [result] = await pool.query(
-        "UPDATE users SET session_token = ? WHERE user_id = ?",
+      const [result] = await pool.execute(
+        `UPDATE users SET session_token = ?, updated_at = NOW() WHERE user_id = ?`,
         [token, user_id]
       );
-
-      if (result.affectedRows === 0) {
-        console.log(`No user found with ID: ${user_id}`);
-        return null;
-      }
-
-      console.log(`Session token updated for user ID: ${user_id}`);
       return result;
     } catch (error) {
-      console.error("Error updating session token:", error.message);
+      console.error("Database Error:", error.message);
       throw error;
     }
   }

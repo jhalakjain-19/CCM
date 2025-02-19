@@ -173,7 +173,7 @@ router.put("/users/:user_id", validateAtUpdate, UserController.updateUser);
  *       401:
  *         description: Invalid credentials
  */
-router.post("/login", validateLogin, UserController.loginUser);
+router.post("/login", validateLogin, UserController.login);
 
 /**
  * @swagger

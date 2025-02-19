@@ -1,4 +1,6 @@
 const UserService = require("../services/userService");
+const { validationResult } = require("express-validator");
+
 // const { passwordResetSchema } = require("../middlewares/userValidator");
 
 class UserController {
@@ -97,29 +99,19 @@ class UserController {
       next(error);
     }
   }
-  static async loginUser(req, res, next) {
+  static async login(req, res) {
     try {
-      const login = await UserService.loginUser(req, req.body);
+      const errors = validationResult(req);
 
-      console.log("🔍 Final Login Response:", login);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
 
-      // if (!login ) {
-      //   console.log("❌ Blocked user detected!");
-      //   return UserController.handleResponse(
-      //     res,
-      //     403,
-      //     "Your authentication is blocked, please contact the administrator."
-      //   );
-      // }
+      const response = await UserService.loginUser(req, req.body);
 
-      UserController.handleResponse(
-        res,
-        200,
-        "User logged in successfully",
-        login
-      );
+      return res.status(200).send(response);
     } catch (error) {
-      next(error);
+      return res.status(500).send({ msg: error.message });
     }
   }
 
