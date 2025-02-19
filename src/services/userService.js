@@ -4,70 +4,71 @@ const pool = require("../config/db");
 console.log("UserModel:", UserModel);
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
+const crypto = require("crypto");
 const sendMail = require("../utils/mailer");
 class UserService {
   // Encrypt function to encrypt reset token with a shorter length
-  // static async encryptId(id) {
-  //   const secretKey = crypto
-  //     .createHash("sha256")
-  //     .update(process.env.SECRET_KEY)
-  //     .digest("base64")
-  //     .substr(0, 16); // Use 16 bytes for aes-128-cbc
+  static async encryptId(id) {
+    const secretKey = crypto
+      .createHash("sha256")
+      .update(process.env.SECRET_KEY)
+      .digest("base64")
+      .substr(0, 16); // Use 16 bytes for aes-128-cbc
 
-  //   if (!secretKey) throw new Error("Missing secret key for encryption");
+    if (!secretKey) throw new Error("Missing secret key for encryption");
 
-  //   // Generate a random 16-byte IV
-  //   const iv = crypto.randomBytes(16);
+    // Generate a random 16-byte IV
+    const iv = crypto.randomBytes(16);
 
-  //   const cipher = crypto.createCipheriv(
-  //     "aes-128-cbc",
-  //     Buffer.from(secretKey),
-  //     iv
-  //   );
+    const cipher = crypto.createCipheriv(
+      "aes-128-cbc",
+      Buffer.from(secretKey),
+      iv
+    );
 
-  //   let encrypted = cipher.update(String(id), "utf8", "base64");
-  //   encrypted += cipher.final("base64");
+    let encrypted = cipher.update(String(id), "utf8", "base64");
+    encrypted += cipher.final("base64");
 
-  //   // Concatenate IV with encrypted data and encode to base64 URL-safe format
-  //   const result = Buffer.concat([iv, Buffer.from(encrypted, "base64")])
-  //     .toString("base64")
-  //     .replace(/=/g, "") // Remove padding
-  //     .replace(/\+/g, "-") // Make URL-safe
-  //     .replace(/\//g, "_");
+    // Concatenate IV with encrypted data and encode to base64 URL-safe format
+    const result = Buffer.concat([iv, Buffer.from(encrypted, "base64")])
+      .toString("base64")
+      .replace(/=/g, "") // Remove padding
+      .replace(/\+/g, "-") // Make URL-safe
+      .replace(/\//g, "_");
 
-  //   return result;
-  // }
+    return result;
+  }
 
   // // Decrypt function to decrypt the token
-  // static async decryptId(encryptedId) {
-  //   const secretKey = crypto
-  //     .createHash("sha256")
-  //     .update(process.env.SECRET_KEY)
-  //     .digest("base64")
-  //     .substr(0, 16); // Use 16 bytes for aes-128-cbc
+  static async decryptId(encryptedId) {
+    const secretKey = crypto
+      .createHash("sha256")
+      .update(process.env.SECRET_KEY)
+      .digest("base64")
+      .substr(0, 16); // Use 16 bytes for aes-128-cbc
 
-  //   if (!secretKey) throw new Error("Missing secret key for decryption");
+    if (!secretKey) throw new Error("Missing secret key for decryption");
 
-  //   // Convert URL-safe Base64 back to standard Base64
-  //   const encryptedData =
-  //     encryptedId.replace(/-/g, "+").replace(/_/g, "/") +
-  //     "==".slice(0, (4 - (encryptedId.length % 4)) % 4);
+    // Convert URL-safe Base64 back to standard Base64
+    const encryptedData =
+      encryptedId.replace(/-/g, "+").replace(/_/g, "/") +
+      "==".slice(0, (4 - (encryptedId.length % 4)) % 4);
 
-  //   const encryptedBuffer = Buffer.from(encryptedData, "base64");
-  //   const iv = encryptedBuffer.slice(0, 16); // Extract IV
-  //   const encryptedText = encryptedBuffer.slice(16); // Encrypted data
+    const encryptedBuffer = Buffer.from(encryptedData, "base64");
+    const iv = encryptedBuffer.slice(0, 16); // Extract IV
+    const encryptedText = encryptedBuffer.slice(16); // Encrypted data
 
-  //   const decipher = crypto.createDecipheriv(
-  //     "aes-128-cbc",
-  //     Buffer.from(secretKey),
-  //     iv
-  //   );
+    const decipher = crypto.createDecipheriv(
+      "aes-128-cbc",
+      Buffer.from(secretKey),
+      iv
+    );
 
-  //   let decrypted = decipher.update(encryptedText, "base64", "utf8");
-  //   decrypted += decipher.final("utf8");
+    let decrypted = decipher.update(encryptedText, "base64", "utf8");
+    decrypted += decipher.final("utf8");
 
-  //   return decrypted;
-  // }
+    return decrypted;
+  }
 
   static async getAllUsers() {
     // console.log("Accessing getAllUsers:", UserModel.getAllUsers());
@@ -181,16 +182,16 @@ class UserService {
         throw new Error("User not found");
       }
 
-      //console.log("User found:", user.Email);
+      console.log("User found:", user[0].Email);
 
       // Generate reset token
       const resetToken = await UserModel.generateResetToken(user);
 
       // Encrypt the reset token with a shorter length
-      //const encryptedToken = await this.encryptId(resetToken);
-      //console.log(encryptedToken);
+      const encryptedToken = await this.encryptId(resetToken);
+      console.log(encryptedToken);
       // Construct the reset link with the encrypted token
-      const resetLink = `http://localhost:3001/api/password/reset-password/${resetToken}`;
+      const resetLink = `http://localhost:3001/api/password/reset-password/${encryptedToken}`;
 
       console.log(resetLink);
 
