@@ -243,6 +243,7 @@ class UserController {
       res.status(500).json({ message: error.message });
     }
   }
+  //reset pwd
   static async resetPassword(req, res) {
     console.log("Reset password request received");
     try {
