@@ -2,6 +2,8 @@ class permissionController {
   static handleResponse(res, status, message, data = null) {
     console.log(status);
 
+    console.log("test");
+
     res.status(status).json({
       status,
       message,
