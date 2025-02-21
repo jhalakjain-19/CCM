@@ -293,12 +293,10 @@ class UserModel {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
 
       // Update the user's password and clear the token
-      const [result] = await db
-        .promise()
-        .query(
-          "UPDATE users SET password = ?, reset_token = NULL WHERE reset_token = ?",
-          [hashedPassword, token]
-        );
+      const [result] = await pool.query(
+        "UPDATE users SET password = ?, reset_token = NULL WHERE reset_token = ?",
+        [hashedPassword, token]
+      );
 
       // Check if any row was affected (if the token was found and updated)
       if (result.affectedRows === 0) {
