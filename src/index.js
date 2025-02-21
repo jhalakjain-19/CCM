@@ -23,17 +23,25 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "CCM",
+      title: "CCM APIs",
       version: "1.0.0",
+      description: "API documentation for CCM",
     },
     servers: [
       {
         url: swaggerServerUrl,
       },
     ],
+    tags: [
+      {
+        name: "Users",
+        description: "API for user management ",
+      },
+    ],
   },
   apis: ["./routes/userRoutes.js"],
 };
+
 const swaggerSpec = swaggerJSDoc(options);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

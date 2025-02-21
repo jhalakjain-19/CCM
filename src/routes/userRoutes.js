@@ -13,6 +13,8 @@ const router = express.Router();
  * /users:
  *   get:
  *     summary: Retrieve a list of all users
+ *     tags:
+ *      - Users
  *     description: Get all users from the database.
  *     responses:
  *       200:
@@ -38,6 +40,8 @@ router.get("/users", UserController.getAllUsers);
  * /users/{user_id}:
  *   get:
  *     summary: Retrieve a user by ID
+ *     tags:
+ *     - Users
  *     description: Get a specific user from the database by ID.
  *     parameters:
  *       - in: path
@@ -68,6 +72,8 @@ router.get("/users/:user_id", UserController.getUserById);
  * /users/{user_id}:
  *   delete:
  *     summary: Delete a user
+ *     tags:
+ *      - Users
  *     description: Delete a specific user from the database by ID.
  *     parameters:
  *       - in: path
@@ -89,6 +95,8 @@ router.delete("/users/:user_id", UserController.deleteUser);
  * /users:
  *   post:
  *     summary: Create a new user
+ *     tags:
+ *      - Users
  *     description: Create a new user in the database.
  *     requestBody:
  *       required: true
@@ -120,6 +128,8 @@ router.post("/users", validateUser, UserController.createUser);
  * /users/{user_id}:
  *   put:
  *     summary: Update an existing user
+ *     tags:
+ *      - Users
  *     description: Update a user's details in the database.
  *     parameters:
  *       - in: path
@@ -155,6 +165,8 @@ router.put("/users/:user_id", validateAtUpdate, UserController.updateUser);
  * /login:
  *   post:
  *     summary: User login
+ *     tags:
+ *       - Users
  *     description: Authenticate a user and return a token.
  *     requestBody:
  *       required: true
@@ -180,6 +192,8 @@ router.post("/login", validateLogin, UserController.login);
  * /users/{user_id}/change-password:
  *   put:
  *     summary: Change a user's password
+ *     tags:
+ *      - Users
  *     description: Allows a user to change their password by providing the current password and a new password.
  *     parameters:
  *       - in: path
@@ -233,6 +247,8 @@ router.put(
  * /users/getPermission/{user_id}:
  *   get:
  *     summary: Get permissions by user ID
+ *     tags:
+ *      - Users
  *     description: Retrieve the permissions assigned to a specific user.
  *     parameters:
  *       - in: path
@@ -269,6 +285,8 @@ router.get(
  * /users/setPermission/{user_id}:
  *   put:
  *     summary: Set permissions for a user ID
+ *     tags:
+ *      - Users
  *     description: Assign or update permissions for a specific user by user ID.
  *     parameters:
  *       - in: path
@@ -306,6 +324,8 @@ router.put(
  * /permissions:
  *   get:
  *     summary: Get all permissions
+ *     tags:
+ *      - Users
  *     description: Retrieve a list of all available permissions from the modules table.
  *     responses:
  *       200:
@@ -338,6 +358,8 @@ router.get("/permissions", UserController.getAllPermissions);
  * /users/setStatus/{user_id}:
  *   put:
  *     summary: Update user status
+ *     tags:
+ *      - Users
  *     description: Set or update the status of a specific user.
  *     parameters:
  *       - in: path
