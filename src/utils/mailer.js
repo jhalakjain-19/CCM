@@ -1,48 +1,36 @@
 const nodemailer = require("nodemailer");
-require("dotenv").config(); // Ensure environment variables are loaded
+require("dotenv").config();
 
-const sendMail = async (email, subject, resetLink) => {
+const sendMail = async (to, subject, content) => {
   try {
+    console.log("Sending email...");
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT, // Ensure PORT is a number
-      secure: false, // Use `true` for port 465, `false` for 587
+      port: process.env.SMTP_PORT,
+      secure: false, // Use `true` for port 465
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASSWORD,
       },
+
+      debug: true, // Enable debugging
     });
+    console.log("Transport...");
 
     const mailOptions = {
       from: process.env.SMTP_MAIL,
-      to: email,
+      to,
       subject,
-      html: `
-        <p>Click the button below to reset your password:</p>
-<p>
-  <a href="${resetLink}" target="_blank" style="
-    display: inline-block;
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-  ">
-    Reset Password
-  </a>
-</p>
-<p>If you didn't request this, please ignore it.</p>
-
-      `,
+      html: content,
     };
+    console.log("Mail options...");
 
-    await transporter.sendMail(mailOptions);
-    console.log("✅ Email sent successfully!");
+    const info = await transporter.sendMail(mailOptions);
+    console.log("msgg", info);
+    //console.log("✅ Email sent:", info.messageId);
+    return true;
   } catch (error) {
-    console.error("❌ Error sending email:", error.message);
+    console.error("❌ Error sending email:", error);
     throw new Error("Failed to send email");
   }
 };

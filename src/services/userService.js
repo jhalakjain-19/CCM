@@ -202,7 +202,7 @@ class UserService {
       `;
 
       // Send email
-      await sendMail(email, subject, resetLink);
+      await sendMail(email, subject, content);
 
       return { message: "Password reset email sent successfully" };
     } catch (error) {
