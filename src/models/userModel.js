@@ -154,8 +154,12 @@ class UserModel {
   static async getUserByEmail(email) {
     const query = "SELECT * FROM users WHERE Email = ?";
     try {
-      const [user] = await pool.query(query, [email]);
-      return user;
+      const [rows] = await pool.query(query, [email]);
+      if (!rows || rows.length === 0) {
+        return null; // Return null if no user is found
+      }
+      console.log("User found:", rows[0]);
+      return rows[0];
     } catch (error) {
       console.error("Error fetching user by email:", error.message);
       throw error;
@@ -168,18 +172,18 @@ class UserModel {
     console.log("User found:", user);
 
     try {
-      console.log("Generating reset token for user:", user[0].Email);
+      console.log("Generating reset token for user:", user.Email);
       // Generate a JWT token
       const token = jwt.sign(
-        { Email: user[0].Email },
+        { Email: user.Email },
         JWT_SECRET,
         { expiresIn: "1h" } // Token expires in 1 hour
       );
 
       // Store the token in the database
-      await pool.query(`UPDATE users SET reset_token = ? WHERE email = ?`, [
+      await pool.query(`UPDATE users SET reset_token = ? WHERE Email = ?`, [
         token,
-        user[0].Email,
+        user.Email,
       ]);
 
       return token;
