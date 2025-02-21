@@ -243,5 +243,35 @@ class UserController {
       res.status(500).json({ message: error.message });
     }
   }
+  static async resetPassword(req, res) {
+    console.log("Reset password request received");
+    try {
+      const { reset_token } = req.params; // Get token from URL
+      const { newPassword, confirmPassword } = req.body; // Get passwords from body
+
+      // Validate that passwords are provided
+      if (!newPassword || !confirmPassword) {
+        return res.status(400).json({ message: "Both passwords are required" });
+      }
+
+      // Check if passwords match
+      if (newPassword !== confirmPassword) {
+        return res.status(400).json({ message: "Passwords do not match" });
+      }
+
+      // Call the service to reset the password
+      const result = await UserService.resetPasswordWithToken(
+        reset_token,
+        newPassword
+      );
+      console.log("Password reset successfully");
+      return res
+        .status(200)
+        .json({ message: "Password reset successfully", result });
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      return res.status(500).json({ message: error.message });
+    }
+  }
 }
 module.exports = UserController;

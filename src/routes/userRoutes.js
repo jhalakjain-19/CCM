@@ -369,5 +369,5 @@ router.put("/users/setStatus/:user_id", UserController.setStatusByUserId);
 
 router.post("/users/forgotpassword", UserController.forgotPassword);
 
-// router.post("/users/reset-password/:reset_token", UserController.resetPassword);
+router.post("/users/reset-password/:reset_token", UserController.resetPassword);
 module.exports = router;

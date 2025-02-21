@@ -1,7 +1,6 @@
 const UserModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const pool = require("../config/db");
-console.log("UserModel:", UserModel);
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 const crypto = require("crypto");
@@ -10,42 +9,37 @@ class UserService {
   // Encrypt function to encrypt reset token with a shorter length
   static async encryptId(id) {
     const secretKey = crypto
-      .createHash("sha256")
+      .createHash("sha1") // Shorter hash than sha256
       .update(process.env.SECRET_KEY)
       .digest("base64")
-      .substr(0, 16); // Use 16 bytes for aes-128-cbc
-
+      .substr(0, 16); // Use 16 bytes for AES-128
     if (!secretKey) throw new Error("Missing secret key for encryption");
 
-    // Generate a random 16-byte IV
-    const iv = crypto.randomBytes(16);
-
     const cipher = crypto.createCipheriv(
-      "aes-128-cbc",
+      "aes-128-ecb", // No IV needed, reduces size
       Buffer.from(secretKey),
-      iv
+      null
     );
 
     let encrypted = cipher.update(String(id), "utf8", "base64");
     encrypted += cipher.final("base64");
 
-    // Concatenate IV with encrypted data and encode to base64 URL-safe format
-    const result = Buffer.concat([iv, Buffer.from(encrypted, "base64")])
-      .toString("base64")
-      .replace(/=/g, "") // Remove padding
-      .replace(/\+/g, "-") // Make URL-safe
+    // Convert to Base62 (shorter and URL-safe)
+    const shortToken = encrypted
+      .replace(/=+$/, "")
+      .replace(/\+/g, "-")
       .replace(/\//g, "_");
 
-    return result;
+    return shortToken.substr(0, 16); // Truncate if needed
   }
 
-  // // Decrypt function to decrypt the token
+  // Decrypt function to decrypt the token
   static async decryptId(encryptedId) {
     const secretKey = crypto
-      .createHash("sha256")
+      .createHash("sha1") // Use the same hash as encryption
       .update(process.env.SECRET_KEY)
       .digest("base64")
-      .substr(0, 16); // Use 16 bytes for aes-128-cbc
+      .substr(0, 16); // Use 16 bytes for AES-128
 
     if (!secretKey) throw new Error("Missing secret key for decryption");
 
@@ -54,17 +48,13 @@ class UserService {
       encryptedId.replace(/-/g, "+").replace(/_/g, "/") +
       "==".slice(0, (4 - (encryptedId.length % 4)) % 4);
 
-    const encryptedBuffer = Buffer.from(encryptedData, "base64");
-    const iv = encryptedBuffer.slice(0, 16); // Extract IV
-    const encryptedText = encryptedBuffer.slice(16); // Encrypted data
-
     const decipher = crypto.createDecipheriv(
-      "aes-128-cbc",
+      "aes-128-ecb", // Must match encryption method
       Buffer.from(secretKey),
-      iv
+      null // ECB mode does not use an IV
     );
 
-    let decrypted = decipher.update(encryptedText, "base64", "utf8");
+    let decrypted = decipher.update(encryptedData, "base64", "utf8");
     decrypted += decipher.final("utf8");
 
     return decrypted;
@@ -191,7 +181,7 @@ class UserService {
       const encryptedToken = await this.encryptId(resetToken);
       console.log(encryptedToken);
       // Construct the reset link with the encrypted token
-      const resetLink = `http://localhost:3001/api/password/reset-password/${encryptedToken}`;
+      const resetLink = `http://localhost:3001/api/users/reset-password/${encryptedToken}`;
 
       console.log(resetLink);
 
@@ -206,6 +196,19 @@ class UserService {
       await sendMail(email, subject, content);
 
       return { message: "Password reset email sent successfully" };
+    } catch (error) {
+      return { error: error.message };
+    }
+  }
+  static async resetPasswordWithToken(token, newPassword) {
+    try {
+      // Decrypt the token before validating
+      const decryptedToken = await this.decryptId(token);
+
+      // Validate token and reset password
+      await UserModel.resetPassword(decryptedToken, newPassword);
+
+      return { success: true };
     } catch (error) {
       return { error: error.message };
     }

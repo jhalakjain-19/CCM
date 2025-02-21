@@ -287,6 +287,31 @@ class UserModel {
       throw error;
     }
   }
+  static async resetPassword(token, newPassword) {
+    try {
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      // Update the user's password and clear the token
+      const [result] = await db
+        .promise()
+        .query(
+          "UPDATE users SET password = ?, reset_token = NULL WHERE reset_token = ?",
+          [hashedPassword, token]
+        );
+
+      // Check if any row was affected (if the token was found and updated)
+      if (result.affectedRows === 0) {
+        throw new Error("Invalid or expired token");
+      }
+
+      console.log("Database update result:", result);
+      return { success: true, message: "Password reset successfully" };
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      throw new Error("Error resetting password");
+    }
+  }
 }
 
 module.exports = UserModel;
