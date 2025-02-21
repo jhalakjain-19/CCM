@@ -154,12 +154,15 @@ class UserModel {
   static async getUserByEmail(email) {
     const query = "SELECT * FROM users WHERE Email = ?";
     try {
-      const [rows] = await pool.query(query, [email]);
+      console.log("Executing query:", query, "with email:", email);
+      const [rows] = await pool.query(query, [email]); // Correct structure for MySQL2
+
       if (!rows || rows.length === 0) {
-        return null; // Return null if no user is found
+        console.log("No user found with email:", email);
+        return null;
       }
       console.log("User found:", rows[0]);
-      return rows[0];
+      return rows[0]; // Return the first user found
     } catch (error) {
       console.error("Error fetching user by email:", error.message);
       throw error;

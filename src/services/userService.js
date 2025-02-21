@@ -181,7 +181,7 @@ class UserService {
         throw new Error("User not found");
       }
 
-      console.log("User found:", user[0].Email);
+      console.log("User found:", user.Email);
 
       // Generate reset token
       const resetToken = await UserModel.generateResetToken(user);
@@ -190,7 +190,7 @@ class UserService {
       const encryptedToken = await this.encryptId(resetToken);
       console.log(encryptedToken);
       // Construct the reset link with the encrypted token
-      const resetLink = `http://localhost:1106/api/users/reset-password/${encryptedToken}`;
+      const resetLink = `http://localhost:1106/api/password/reset-password/${encryptedToken}`;
 
       console.log(resetLink);
 
