@@ -5,7 +5,7 @@ const sendMail = async (email, subject, resetLink) => {
   try {
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT, 10), // Ensure PORT is a number
+      port: process.env.SMTP_PORT, // Ensure PORT is a number
       secure: false, // Use `true` for port 465, `false` for 587
       auth: {
         user: process.env.SMTP_USER,
