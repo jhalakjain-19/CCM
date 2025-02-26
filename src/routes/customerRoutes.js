@@ -1,3 +1,7 @@
+const express = require("express");
+const CustomerController = require("../controllers/customerController");
+
+const router = express.Router();
 /**
  * @swagger
  * tags:
@@ -41,6 +45,8 @@
  *                     type: string
  *                     format: date-time
  */
+// Router to get all attribute types
+router.get("/attr-types", CustomerController.getAttrTypes);
 
 /**
  * @swagger
@@ -78,6 +84,8 @@
  *                     type: string
  *                     format: date-time
  */
+// Router to get all data types
+router.get("/data-types", CustomerController.getDataTypes);
 
 /**
  * @swagger
@@ -132,6 +140,8 @@
  *       500:
  *         description: Internal Server Error
  */
+// Create an attribute name
+router.post("/create-attribute", CustomerController.createAttribute);
 
 /**
  * @swagger
@@ -172,21 +182,6 @@
  *                     type: string
  *                     format: date-time
  */
-
-const express = require("express");
-const CustomerController = require("../controllers/customerController");
-
-const router = express.Router();
-
-// Router to get all attribute types
-router.get("/attr-types", CustomerController.getAttrTypes);
-
-// Router to get all data types
-router.get("/data-types", CustomerController.getDataTypes);
-
-// Create an attribute name
-router.post("/create-attribute", CustomerController.createAttribute);
-
 // Get all attribute names
 router.get("/get-attributes", CustomerController.getAttributes);
 
