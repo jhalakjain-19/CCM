@@ -47,7 +47,7 @@ const swaggerSpec = swaggerJSDoc(options);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api", userRoutes);
-// app.use("/api/customer", customerRoutes);
+app.use("/api/customer", customerRoutes);
 console.log(`User role is: ${roleNames[1]}`);
 app.use(errorHandler);
 
