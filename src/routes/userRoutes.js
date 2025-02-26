@@ -187,61 +187,50 @@ router.put("/users/:user_id", validateAtUpdate, UserController.updateUser);
  */
 router.post("/login", validateLogin, UserController.login);
 
-/**
- * @swagger
- * /users/{user_id}/change-password:
- *   put:
- *     summary: Change a user's password
- *     tags:
- *      - Users
- *     description: Allows a user to change their password by providing the current password and a new password.
- *     parameters:
- *       - in: path
- *         name: user_id
- *         required: true
- *         description: ID of the user whose password is being changed.
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               currentPassword:
- *                 type: string
- *
- *               newPassword:
- *                 type: string
- *
- *     responses:
- *       200:
- *         description: Password changed successfully
- *       400:
- *         description: Invalid input, password validation failed
- *       404:
- *         description: User not found
- *       500:
- *         description: Internal server error
- */
-router.put(
-  "/users/:user_id/change-password",
-  validatePasswordReset,
-  UserController.changePassword
-);
-// //Route to get permission by user_id
-// router.get(
-//   "/users/getPermission/:user_id",
-//   UserController.getPermissionByUserId
+// /**
+//  * @swagger
+//  * /users/{user_id}/change-password:
+//  *   put:
+//  *     summary: Change a user's password
+//  *     tags:
+//  *      - Users
+//  *     description: Allows a user to change their password by providing the current password and a new password.
+//  *     parameters:
+//  *       - in: path
+//  *         name: user_id
+//  *         required: true
+//  *         description: ID of the user whose password is being changed.
+//  *         schema:
+//  *           type: string
+//  *     requestBody:
+//  *       required: true
+//  *       content:
+//  *         application/json:
+//  *           schema:
+//  *             type: object
+//  *             properties:
+//  *               currentPassword:
+//  *                 type: string
+//  *
+//  *               newPassword:
+//  *                 type: string
+//  *
+//  *     responses:
+//  *       200:
+//  *         description: Password changed successfully
+//  *       400:
+//  *         description: Invalid input, password validation failed
+//  *       404:
+//  *         description: User not found
+//  *       500:
+//  *         description: Internal server error
+//  */
+// router.put(
+//   "/users/:user_id/change-password",
+//   validatePasswordReset,
+//   UserController.changePassword
 // );
 
-// // Route to set permission by user ID
-// router.put(
-//   "/users/setPermission/:user_id",
-//   UserController.setPermissionByUserId
-// );
-// router.get("/permissions", UserController.getAllPermissions);
 /**
  * @swagger
  * /users/getPermission/{user_id}:
