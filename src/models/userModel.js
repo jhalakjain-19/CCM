@@ -78,7 +78,7 @@ class UserModel {
   static async createUser(req) {
     try {
       const currentTimestamp = new Date();
-      const { Name, Email, Phone_no, Password, created_on } = req.body;
+      const { Name, Email, Phone_no, Password } = req.body;
       console.log(req.body);
 
       // Step 1: Check if a user with the provided email already exists in the database
