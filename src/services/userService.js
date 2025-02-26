@@ -196,10 +196,9 @@ class UserService {
 
       const subject = "Password Reset Request";
       const content = `
-        <p>Click the link below to reset your password:</p>
-        ${resetLink}
-        <p>If you didn't request this, please ignore it.</p>
-      `;
+    <p>Click <a href="${resetLink}" target="_blank">here</a> to reset your password.</p>
+    <p>If you didn't request this, please ignore it.</p>
+`;
 
       // Send email
       await sendMail(email, subject, content);

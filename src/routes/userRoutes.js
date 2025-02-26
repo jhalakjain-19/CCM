@@ -388,7 +388,96 @@ router.get("/permissions", UserController.getAllPermissions);
  */
 
 router.put("/users/setStatus/:user_id", UserController.setStatusByUserId);
-
+//route for forgot password
+/**
+ * @swagger
+ * /users/forgotpassword:
+ *   post:
+ *     summary: Request a password reset
+ *     description: Sends a password reset link to the user's email address.
+ *     tags:
+ *      - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - Email
+ *             properties:
+ *               Email:
+ *                 type: string
+ *                 format: Email
+ *                 example: user@example.com
+ *     responses:
+ *       200:
+ *         description: Password reset email sent successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Password reset email sent successfully"
+ *       400:
+ *         description: Bad request (missing email)
+ *       500:
+ *         description: Internal Server Error
+ */
+//route for forgot password
+/**
+ * @swagger
+ * /users/reset-password/{reset_token}:
+ *   post:
+ *     summary: Reset password using the token
+ *     description: Allows a user to reset their password using a valid token.
+ *     tags:
+ *      - Users
+ *     parameters:
+ *       - in: path
+ *         name: reset_token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Token received via email for password reset
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - newPassword
+ *               - confirmPassword
+ *             properties:
+ *               newPassword:
+ *                 type: string
+ *                 format: password
+ *                 example: "NewPassword123!"
+ *               confirmPassword:
+ *                 type: string
+ *                 format: password
+ *                 example: "NewPassword123!"
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Password reset successfully"
+ *       400:
+ *         description: Bad request (passwords do not match or missing fields)
+ *       404:
+ *         description: Invalid or expired token
+ *       500:
+ *         description: Internal Server Error
+ */
 router.post("/users/forgotpassword", UserController.forgotPassword);
 
 router.post("/users/reset-password/:reset_token", UserController.resetPassword);
