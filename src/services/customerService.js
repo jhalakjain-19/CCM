@@ -6,5 +6,11 @@ class customerService {
   static async getDataTypes() {
     return await customerModel.getDataTypes();
   }
+  static async createAttribute(req) {
+    return await customerModel.createAttribute(req);
+  }
+  static async getAttributes() {
+    return await customerModel.getAttributes();
+  }
 }
 module.exports = customerService;

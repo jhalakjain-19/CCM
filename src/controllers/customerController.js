@@ -35,5 +35,31 @@ class customerController {
       next(error);
     }
   }
+  static async createAttribute(req, res, next) {
+    try {
+      const newAttribute = await customerService.createAttribute(req);
+      customerController.handleResponse(
+        res,
+        201,
+        "Attribute created successfully",
+        newAttribute
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async getAttributes(req, res, next) {
+    try {
+      const attributes = await customerService.getAttributes();
+      customerController.handleResponse(
+        res,
+        200,
+        "Attributes fetched successfully",
+        attributes
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 module.exports = customerController;
