@@ -38,9 +38,13 @@ const options = {
         name: "Users",
         description: "API for user management ",
       },
+      {
+        name: "Customers",
+        description: "API for customer management",
+      },
     ],
   },
-  apis: ["./routes/userRoutes.js"],
+  apis: ["./routes/userRoutes.js", "./routes/customerRoutes.js"],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
