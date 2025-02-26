@@ -259,19 +259,35 @@ class UserModel {
       throw error;
     }
   }
+  // static async setPermissionByUserId(userId, permission) {
+  //   try {
+  //     const [result] = await pool.query(
+  //       `UPDATE users SET permission = ? WHERE user_id = ?`,
+  //       [permission, userId]
+  //     );
+
+  //     return result.affectedRows > 0; // Returns true if at least one row was updated
+  //   } catch (error) {
+  //     console.error("Error updating permission in DB:", error.message);
+  //     throw error;
+  //   }
+  // }
   static async setPermissionByUserId(userId, permission) {
     try {
+      const newPermission = permission === "NULL" ? null : permission;
+
       const [result] = await pool.query(
         `UPDATE users SET permission = ? WHERE user_id = ?`,
-        [permission, userId]
+        [newPermission, userId]
       );
 
-      return result.affectedRows > 0; // Returns true if at least one row was updated
+      return result; // Returns true if at least one row was updated
     } catch (error) {
       console.error("Error updating permission in DB:", error.message);
       throw error;
     }
   }
+
   static async getAllPermissions() {
     try {
       const [result] = await pool.query(`SELECT id,Permission FROM Module`);

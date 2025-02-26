@@ -197,7 +197,7 @@ class UserService {
       const subject = "Password Reset Request";
       const content = `
         <p>Click the link below to reset your password:</p>
-        <a href="${resetLink}">Reset Password</a>
+        ${resetLink}
         <p>If you didn't request this, please ignore it.</p>
       `;
 
