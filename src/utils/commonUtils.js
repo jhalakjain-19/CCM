@@ -1,5 +1,5 @@
 const roleNames = {
-  1: "Admin",
+  1: "SuperAdmin",
   2: "User",
   3: "Customer",
 };
