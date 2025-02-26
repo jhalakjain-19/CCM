@@ -190,7 +190,7 @@ class UserService {
       const encryptedToken = await this.encryptId(resetToken);
       console.log(encryptedToken);
       // Construct the reset link with the encrypted token
-      const resetLink = `http://localhost:1106/api/password/reset-password/${encryptedToken}`;
+      const resetLink = `http://localhost:1106/api/users/reset-password/${encryptedToken}`;
 
       console.log(resetLink);
 
