@@ -165,7 +165,9 @@ class UserModel {
         ]);
       }
 
-      return { message: "User created successfully", user_id };
+      return {
+        user_id,
+      };
     } catch (error) {
       console.error(error.message);
       throw error;

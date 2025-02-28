@@ -77,7 +77,7 @@ class UserController {
       UserController.handleResponse(
         res,
         201,
-        "User created successfully",
+        "User and default attributes created successfully",
         newUser
       );
     } catch (error) {

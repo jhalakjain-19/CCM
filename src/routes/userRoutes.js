@@ -415,7 +415,7 @@ router.put("/users/setStatus/:user_id", UserController.setStatusByUserId);
  *       500:
  *         description: Internal Server Error
  */
-//route for forgot password
+//route for reset password
 /**
  * @swagger
  * /users/reset-password/{reset_token}:
