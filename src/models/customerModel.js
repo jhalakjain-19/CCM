@@ -23,12 +23,16 @@ class customerModel {
   }
   static async createAttribute(req) {
     try {
-      const { customer_id, field_name, data_type, attribute_type } = req.body;
-
+      // Extract user_id from the token
+      const { id: user_id } = req.user;
+      const { field_name, data_type, attribute_type } = req.body;
+      console.log("user_id", user_id);
+      console.log("field_name", field_name);
+      console.log("data_type", data_type);
       // Validate required fields
-      if (!customer_id || !field_name || !data_type || !attribute_type) {
+      if (!user_id) {
         throw new Error(
-          "customer_id, field_name, data_type, and attribute_type are required"
+          "user_id, field_name, data_type, and attribute_type are required"
         );
       }
 
@@ -39,11 +43,10 @@ class customerModel {
       `;
 
       const [result] = await pool.query(query, [
-        customer_id,
+        user_id, // Store user_id as customer_id
         field_name,
         data_type,
         attribute_type,
-        status,
       ]);
 
       return { message: "Attribute created successfully", id: result.insertId };
@@ -52,6 +55,7 @@ class customerModel {
       throw error;
     }
   }
+
   static async getAttributes() {
     try {
       const query = `SELECT * FROM CCMS.customer_details`;

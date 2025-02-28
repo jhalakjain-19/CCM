@@ -1,5 +1,6 @@
 const express = require("express");
 const CustomerController = require("../controllers/customerController");
+const authenticateUser = require("../middlewares/auth");
 
 const router = express.Router();
 /**
@@ -141,7 +142,12 @@ router.get("/data-types", CustomerController.getDataTypes);
  *         description: Internal Server Error
  */
 // Create an attribute name
-router.post("/create-attribute", CustomerController.createAttribute);
+// router.post("/create-attribute", CustomerController.createAttribute);
+router.post(
+  "/create-attribute",
+  authenticateUser,
+  CustomerController.createAttribute
+);
 
 /**
  * @swagger

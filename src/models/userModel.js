@@ -155,7 +155,7 @@ class UserModel {
     const query = "SELECT * FROM users WHERE Email = ?";
     try {
       console.log("Executing query:", query, "with email:", email);
-      const [rows] = await pool.query(query, [email]); // Correct structure for MySQL2
+      const [rows] = await pool.query(query, [email]);
 
       if (!rows || rows.length === 0) {
         console.log("No user found with email:", email);

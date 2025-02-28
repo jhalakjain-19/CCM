@@ -102,7 +102,9 @@ class UserService {
       );
     }
 
-    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ id: user.user_id }, JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     // Update session token in the database
     await UserModel.updateSessionToken(user.user_id, token);
@@ -129,22 +131,22 @@ class UserService {
       return null; // User doesn't exist
     }
 
-    const user = users[0]; // Extract the first user object
-    console.log("User found:", user);
+    //const user = users[0]; // Extract the first user object
+    console.log("User found:", users);
 
-    if (!user.Password) {
-      console.log("Password missing in DB:", user);
+    if (!users.Password) {
+      console.log("Password missing in DB:", users);
       return null; // Password is missing
     }
 
     // Compare hashed passwords
-    const validPassword = await bcrypt.compare(Password, user.Password);
+    const validPassword = await bcrypt.compare(Password, users.Password);
     if (!validPassword) {
       console.log("Invalid password for user:", Email);
       return null; // Incorrect password
     }
 
-    return user;
+    return users;
   }
 
   // Call the changePassword function from UserModel
@@ -191,6 +193,7 @@ class UserService {
       console.log(encryptedToken);
       // Construct the reset link with the encrypted token
       const resetLink = `http://localhost:1106/api/users/reset-password/${encryptedToken}`;
+      // const resetLink = `https://ccmapi.development-review.net/api/users/reset-password/${encryptedToken}`;
 
       console.log(resetLink);
 
