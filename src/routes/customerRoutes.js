@@ -191,7 +191,7 @@ router.post(
 // Get all attribute names
 router.get("/get-attributes", CustomerController.getAttributes);
 
-//Route to delete attribute_name
+//Route to delete attribute_name by id
 router.delete(
   "/delete-attribute/:contact_field_id",
   CustomerController.deleteAttribute
