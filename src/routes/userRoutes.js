@@ -415,6 +415,8 @@ router.put("/users/setStatus/:user_id", UserController.setStatusByUserId);
  *       500:
  *         description: Internal Server Error
  */
+router.post("/users/forgotpassword", UserController.forgotPassword);
+
 //route for reset password
 /**
  * @swagger
@@ -467,7 +469,6 @@ router.put("/users/setStatus/:user_id", UserController.setStatusByUserId);
  *       500:
  *         description: Internal Server Error
  */
-router.post("/users/forgotpassword", UserController.forgotPassword);
 
 router.post("/users/reset-password/:reset_token", UserController.resetPassword);
 module.exports = router;
