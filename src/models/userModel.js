@@ -75,6 +75,44 @@ class UserModel {
     }
   }
 
+  // static async createUser(req) {
+  //   try {
+  //     const currentTimestamp = new Date();
+  //     const { Name, Email, Phone_no, Password } = req.body;
+  //     console.log(req.body);
+
+  //     // Step 1: Check if a user with the provided email already exists in the database
+  //     const [existingUser] = await pool.query(
+  //       "SELECT * FROM users WHERE Email = ?",
+  //       [Email]
+  //     );
+
+  //     if (existingUser.length > 0) {
+  //       // If the email already exists, return an error response
+  //       throw new Error("Email is already in use.");
+  //     }
+
+  //     // Step 2: Hash the password if email is not duplicated
+  //     const salt = await bcrypt.genSalt(10);
+  //     const hashedPassword = await bcrypt.hash(Password, salt);
+
+  //     // Step 3: Format the role (array or comma-separated string)
+  //     // const formattedRole = Array.isArray(role) ? JSON.stringify(role) : role;
+
+  //     // Step 4: Insert the new user data into the database
+  //     const result = await pool.query(
+  //       "INSERT INTO users (Name, Email, Phone_no, Password, created_on) VALUES(?, ?, ?, ?, ?)",
+  //       [Name, Email, Phone_no, hashedPassword, currentTimestamp]
+  //     );
+
+  //     // Return the created user (typically, you might want to send a success message instead of the full user)
+  //     const createdUser = result[0]; // result is the inserted row
+  //     return createdUser;
+  //   } catch (error) {
+  //     console.error(error.message);
+  //     throw error;
+  //   }
+  // }
   static async createUser(req) {
     try {
       const currentTimestamp = new Date();
@@ -88,26 +126,46 @@ class UserModel {
       );
 
       if (existingUser.length > 0) {
-        // If the email already exists, return an error response
         throw new Error("Email is already in use.");
       }
 
-      // Step 2: Hash the password if email is not duplicated
+      // Step 2: Hash the password
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(Password, salt);
 
-      // Step 3: Format the role (array or comma-separated string)
-      // const formattedRole = Array.isArray(role) ? JSON.stringify(role) : role;
-
-      // Step 4: Insert the new user data into the database
-      const result = await pool.query(
+      // Step 3: Insert the new user into the database
+      const [result] = await pool.query(
         "INSERT INTO users (Name, Email, Phone_no, Password, created_on) VALUES(?, ?, ?, ?, ?)",
         [Name, Email, Phone_no, hashedPassword, currentTimestamp]
       );
 
-      // Return the created user (typically, you might want to send a success message instead of the full user)
-      const createdUser = result[0]; // result is the inserted row
-      return createdUser;
+      // Get the newly created user's ID
+      const user_id = result.insertId;
+
+      // Step 4: Insert default attributes for the new user
+      const defaultFields = [
+        { field_name: "first_name", data_type: 8, attribute_type: 1 },
+        { field_name: "last_name", data_type: 8, attribute_type: 1 },
+        { field_name: "city", data_type: 8, attribute_type: 1 },
+        { field_name: "email", data_type: 8, attribute_type: 1 },
+      ];
+
+      const query = `
+            INSERT INTO CCMS.customer_details (user_id, field_name, data_type, attribute_type, status, created_on)
+            VALUES (?, ?, ?, ?, 1, ?)
+        `;
+
+      for (const field of defaultFields) {
+        await pool.query(query, [
+          user_id,
+          field.field_name,
+          field.data_type,
+          field.attribute_type,
+          currentTimestamp,
+        ]);
+      }
+
+      return { message: "User created successfully", user_id };
     } catch (error) {
       console.error(error.message);
       throw error;
