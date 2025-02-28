@@ -12,5 +12,13 @@ class customerService {
   static async getAttributes() {
     return await customerModel.getAttributes();
   }
+  static async deleteAttribute(contact_field_id) {
+    try {
+      return await customerModel.deleteAttribute(contact_field_id);
+    } catch (error) {
+      console.error("Service Error:", error.message);
+      throw error;
+    }
+  }
 }
 module.exports = customerService;

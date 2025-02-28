@@ -61,5 +61,29 @@ class customerController {
       next(error);
     }
   }
+  static async deleteAttribute(req, res, next) {
+    try {
+      const { contact_field_id } = req.params;
+
+      if (!contact_field_id) {
+        return res
+          .status(400)
+          .json({ message: "contact_field_id is required" });
+      }
+
+      const result = await customerService.deleteAttribute(contact_field_id);
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Attribute not found" });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Attribute deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting attribute:", error.message);
+      next(error);
+    }
+  }
 }
 module.exports = customerController;

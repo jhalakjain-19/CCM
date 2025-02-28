@@ -38,7 +38,7 @@ class customerModel {
 
       // Insert into database (MySQL will handle created_on automatically)
       const query = `
-        INSERT INTO CCMS.customer_details (customer_id, field_name, data_type, attribute_type)
+        INSERT INTO CCMS.customer_details (user_id, field_name, data_type, attribute_type)
         VALUES (?, ?, ?, ?)
       `;
 
@@ -63,6 +63,17 @@ class customerModel {
       return rows;
     } catch (error) {
       console.error("Error fetching attributes:", error.message);
+      throw error;
+    }
+  }
+  static async deleteAttribute(contact_field_id) {
+    try {
+      const query = `DELETE FROM CCMS.customer_details WHERE contact_field_id = ?`;
+
+      const [result] = await pool.query(query, [contact_field_id]);
+      return result;
+    } catch (error) {
+      console.error("Database Error:", error.message);
       throw error;
     }
   }
