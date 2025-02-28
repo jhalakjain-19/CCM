@@ -135,8 +135,8 @@ class UserModel {
 
       // Step 3: Insert the new user into the database
       const [result] = await pool.query(
-        "INSERT INTO users (Name, Email, Phone_no, Password, created_on) VALUES(?, ?, ?, ?, ?)",
-        [Name, Email, Phone_no, hashedPassword, currentTimestamp]
+        "INSERT INTO users (Name, Email, Phone_no, Password, created_on,status) VALUES(?, ?, ?, ?, ?,?)",
+        [Name, Email, Phone_no, hashedPassword, currentTimestamp, 0]
       );
 
       // Get the newly created user's ID
