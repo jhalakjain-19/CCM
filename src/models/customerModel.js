@@ -36,14 +36,14 @@ class customerModel {
         );
       }
 
-      // Insert into database (MySQL will handle created_on automatically)
+      // Insert into database
       const query = `
         INSERT INTO CCMS.customer_details (user_id, field_name, data_type, attribute_type)
         VALUES (?, ?, ?, ?)
       `;
 
       const [result] = await pool.query(query, [
-        user_id, // Store user_id as customer_id
+        user_id,
         field_name,
         data_type,
         attribute_type,
