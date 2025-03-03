@@ -4,16 +4,14 @@ const storage = multer.memoryStorage(); // Store file in memory
 const upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
-    if (
-      file.mimetype ===
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-      file.mimetype === "application/vnd.ms-excel"
-    ) {
+    console.log("Received file:", file); // Debugging line
+    if (file.mimetype === "text/csv" || file.originalname.endsWith(".csv")) {
       cb(null, true);
     } else {
-      cb(new Error("Only Excel files are allowed"), false);
+      cb(new Error("Only CSV files are allowed"), false);
     }
   },
+  limits: { fileSize: 2 * 1024 * 1024 }, // Limit file size to 2MB
 });
 
 module.exports = upload;

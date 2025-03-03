@@ -1,7 +1,7 @@
 const express = require("express");
 const CustomerController = require("../controllers/customerController");
 const authenticateUser = require("../middlewares/auth");
-
+const upload = require("../middlewares/uploadMiddleware");
 const router = express.Router();
 /**
  * @swagger
@@ -278,4 +278,12 @@ router.delete(
   "/delete-attribute/:contact_field_id",
   CustomerController.deleteAttribute
 );
+//Route for import file
+router.post(
+  "/import-csv",
+  authenticateUser,
+  upload.single("file"),
+  CustomerController.importCsv
+);
+
 module.exports = router;
