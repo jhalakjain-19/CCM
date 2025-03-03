@@ -191,6 +191,63 @@ router.post(
 // Get all attribute names
 router.get("/get-attributes", CustomerController.getAttributes);
 
+/**
+ * @swagger
+ *  /customer/delete-attribute/{contact_field_id}:
+ *   delete:
+ *     summary: Delete an attribute by contact_field_id
+ *     description: Deletes an attribute from the customer_details table using the provided contact_field_id.
+ *     tags: [Customers]
+ *     parameters:
+ *       - in: path
+ *         name: contact_field_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the attribute to be deleted.
+ *     responses:
+ *       200:
+ *         description: Attribute deleted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Attribute deleted successfully"
+ *       400:
+ *         description: Bad request - contact_field_id is required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "contact_field_id is required"
+ *       404:
+ *         description: Attribute not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Attribute not found"
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Internal Server Error"
+ */
+
 //Route to delete attribute_name by id
 router.delete(
   "/delete-attribute/:contact_field_id",
