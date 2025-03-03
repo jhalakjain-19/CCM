@@ -7,7 +7,7 @@ const router = express.Router();
  * @swagger
  * tags:
  *   - name: Customers
- *     description: API for customer attribute management
+ *     description: API for customer management
  */
 
 /**
@@ -93,8 +93,10 @@ router.get("/data-types", CustomerController.getDataTypes);
  * /customer/create-attribute:
  *   post:
  *     summary: Create a new attribute
- *     description: Adds a new attribute to the customer details table.
+ *     description: This API allows an authenticated user to create an attribute in the customer_details table.
  *     tags: [Customers]
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -102,29 +104,25 @@ router.get("/data-types", CustomerController.getDataTypes);
  *           schema:
  *             type: object
  *             required:
- *               - customer_id
  *               - field_name
  *               - data_type
  *               - attribute_type
  *             properties:
- *               customer_id:
- *                 type: integer
- *                 example: 101
  *               field_name:
  *                 type: string
- *                 example: "Phone"
+ *                 example: "first_name"
+ *                 description: The name of the attribute.
  *               data_type:
- *                 type: string
- *                 example: "number"
+ *                 type: integer
+ *                 example: 8
+ *                 description: The data type of the attribute.
  *               attribute_type:
- *                 type: string
- *                 example: "transaction"
- *               status:
  *                 type: integer
  *                 example: 1
+ *                 description: The type of attribute.
  *     responses:
  *       201:
- *         description: Attribute created successfully
+ *         description: Attribute created successfully.
  *         content:
  *           application/json:
  *             schema:
@@ -135,12 +133,39 @@ router.get("/data-types", CustomerController.getDataTypes);
  *                   example: "Attribute created successfully"
  *                 id:
  *                   type: integer
- *                   example: 123
+ *                   example: 10
  *       400:
- *         description: Bad request, missing fields
+ *         description: Bad request - Missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "user_id, field_name, data_type, and attribute_type are required"
+ *       401:
+ *         description: Unauthorized - Token is missing or invalid.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Unauthorized access"
  *       500:
- *         description: Internal Server Error
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Internal Server Error"
  */
+
 // Create an attribute name
 // router.post("/create-attribute", CustomerController.createAttribute);
 router.post(
