@@ -91,50 +91,67 @@ class customerController {
   static async importCsv(req, res) {
     try {
       const { id: user_id } = req.user; // Extract user_id from token
-      console.log("received file", req.file);
-      // Validate file upload
+
+      console.log("Received file:", req.file);
+
+      // ✅ Validate file upload
       if (!req.file) {
         return res.status(400).json({ message: "Please upload a CSV file." });
       }
 
-      // Read file buffer and convert to a stream
-      const fileBuffer = req.file.buffer;
-      const fileStream = fileBuffer.toString("utf-8").split("\n");
+      // ✅ Remove BOM and convert file to string
+      const fileBuffer = req.file.buffer
+        .toString("utf-8")
+        .replace(/^\uFEFF/, "");
+      const fileStream = fileBuffer
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line);
 
+      // ✅ Ensure file is not empty
       if (fileStream.length === 0) {
         return res.status(400).json({ message: "Uploaded CSV file is empty." });
       }
 
-      const results = [];
-      const headers = fileStream[0].trim().split(","); // Extract headers from the first row
+      // ✅ Extract and normalize headers
+      const headers = fileStream[0]
+        .split(",")
+        .map((header) => header.trim().toLowerCase().replace(/\s+/g, "_")); // Normalize headers
 
-      // Fetch existing headers from `customer_details`
+      console.log("Extracted Headers:", headers);
+
+      // ✅ Fetch existing headers from `customer_details`
       const [dbFields] = await pool.query(
         `SELECT contact_field_id, field_name FROM CCMS.customer_details WHERE user_id = ?`,
         [user_id]
       );
 
-      // Convert database headers into an object for easy lookup
+      // ✅ Normalize database headers for comparison
       const fieldMap = {};
       dbFields.forEach((field) => {
-        fieldMap[field.field_name.toLowerCase()] = field.contact_field_id;
+        fieldMap[field.field_name.toLowerCase().replace(/\s+/g, "_")] =
+          field.contact_field_id;
       });
 
-      // Check if all CSV headers exist in the database
-      const missingHeaders = headers.filter(
-        (header) => !fieldMap[header.toLowerCase()]
-      );
+      console.log("Database Fields:", Object.keys(fieldMap));
+
+      // ✅ Check if all CSV headers exist in the database
+      const missingHeaders = headers.filter((header) => !fieldMap[header]);
       if (missingHeaders.length > 0) {
         return res.status(400).json({
           message: `Missing headers in database: ${missingHeaders.join(", ")}`,
         });
       }
 
-      // Parse CSV rows
-      const insertQuery = `INSERT INTO CCMS.customer_data (user_id, contact_field_id, field_value, status, created_on) VALUES (?, ?, ?, ?, NOW())`;
+      // ✅ Prepare SQL query
+      const insertQuery = `
+            INSERT INTO CCMS.customer_data (user_id, contact_field_id, field_value, status, created_on)
+            VALUES (?, ?, ?, ?, NOW())
+        `;
 
-      fileStream.slice(1).forEach(async (line) => {
-        const values = line.trim().split(",");
+      // ✅ Use `for...of` to handle async database inserts properly
+      for (const line of fileStream.slice(1)) {
+        const values = line.split(",");
 
         if (values.length !== headers.length) {
           return res
@@ -143,7 +160,7 @@ class customerController {
         }
 
         for (let i = 0; i < headers.length; i++) {
-          const contact_field_id = fieldMap[headers[i].toLowerCase()];
+          const contact_field_id = fieldMap[headers[i]];
           const field_value = values[i];
 
           await pool.query(insertQuery, [
@@ -153,12 +170,15 @@ class customerController {
             1,
           ]);
         }
-      });
+      }
 
-      res.status(200).json({ message: "CSV data imported successfully!" });
+      // ✅ Send success response only once
+      return res
+        .status(200)
+        .json({ message: "CSV data imported successfully!" });
     } catch (error) {
       console.error("Error importing CSV:", error.message);
-      res.status(500).json({ message: "Internal Server Error" });
+      return res.status(500).json({ message: "Internal Server Error" });
     }
   }
 }
