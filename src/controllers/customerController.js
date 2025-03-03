@@ -91,7 +91,6 @@ class customerController {
   static async importCsv(req, res) {
     try {
       const { id: user_id } = req.user; // Extract user_id from token
-
       console.log("Received file:", req.file);
 
       // ✅ Validate file upload
@@ -113,12 +112,11 @@ class customerController {
         return res.status(400).json({ message: "Uploaded CSV file is empty." });
       }
 
-      // ✅ Extract and normalize headers
-      const headers = fileStream[0]
+      // ✅ Extract and normalize headers from CSV
+      const csvHeaders = fileStream[0]
         .split(",")
         .map((header) => header.trim().toLowerCase().replace(/\s+/g, "_")); // Normalize headers
-
-      console.log("Extracted Headers:", headers);
+      console.log("Extracted CSV Headers:", csvHeaders);
 
       // ✅ Fetch existing headers from `customer_details`
       const [dbFields] = await pool.query(
@@ -133,13 +131,23 @@ class customerController {
           field.contact_field_id;
       });
 
-      console.log("Database Fields:", Object.keys(fieldMap));
+      const dbHeaders = Object.keys(fieldMap);
+      console.log("Database Headers:", dbHeaders);
 
-      // ✅ Check if all CSV headers exist in the database
-      const missingHeaders = headers.filter((header) => !fieldMap[header]);
-      if (missingHeaders.length > 0) {
+      // ✅ Check if all CSV headers exist in the database & vice versa
+      const missingInDatabase = csvHeaders.filter(
+        (header) => !fieldMap[header]
+      );
+      const missingInCSV = dbHeaders.filter(
+        (header) => !csvHeaders.includes(header)
+      );
+
+      if (missingInDatabase.length > 0 || missingInCSV.length > 0) {
         return res.status(400).json({
-          message: `Missing headers in database: ${missingHeaders.join(", ")}`,
+          message: `Header mismatch!`,
+          missing_in_database:
+            missingInDatabase.length > 0 ? missingInDatabase : "None",
+          missing_in_csv: missingInCSV.length > 0 ? missingInCSV : "None",
         });
       }
 
@@ -153,14 +161,14 @@ class customerController {
       for (const line of fileStream.slice(1)) {
         const values = line.split(",");
 
-        if (values.length !== headers.length) {
+        if (values.length !== csvHeaders.length) {
           return res
             .status(400)
             .json({ message: "CSV file format is incorrect." });
         }
 
-        for (let i = 0; i < headers.length; i++) {
-          const contact_field_id = fieldMap[headers[i]];
+        for (let i = 0; i < csvHeaders.length; i++) {
+          const contact_field_id = fieldMap[csvHeaders[i]];
           const field_value = values[i];
 
           await pool.query(insertQuery, [
