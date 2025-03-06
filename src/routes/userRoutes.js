@@ -471,7 +471,59 @@ router.post("/users/forgotpassword", UserController.forgotPassword);
  */
 
 router.post("/users/reset-password/:reset_token", UserController.resetPassword);
-
+//get details of logged in user
+/**
+ * @swagger
+ * /user-details:
+ *   get:
+ *     summary: Get user details of logged in
+ *     description: Fetches details of the authenticated user based on the JWT token.
+ *     tags:
+ *       - Users
+ *     security:
+ *       - BearerAuth: []  # Requires JWT Token
+ *
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved user details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User details fetched successfully
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     user_id:
+ *                       type: integer
+ *                       example: 1
+ *                     Name:
+ *                       type: string
+ *                       example: John Doe
+ *                     Email:
+ *                       type: string
+ *                       example: johndoe@example.com
+ *                     Phone_no:
+ *                       type: string
+ *                       example: "+1234567890"
+ *                     status:
+ *                       type: integer
+ *                       example: 1
+ *                     created_on:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2024-01-01T12:00:00Z"
+ *       400:
+ *         description: User ID is required
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
 router.get("/user-details", authenticateUser, UserController.getUserDetails);
-
 module.exports = router;

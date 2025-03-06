@@ -56,16 +56,27 @@ class customerModel {
     }
   }
 
-  static async getAttributes() {
+  // static async getAttributes() {
+  //   try {
+  //     const query = `SELECT * FROM CCMS.customer_details`;
+  //     const [rows] = await pool.query(query);
+  //     return rows;
+  //   } catch (error) {
+  //     console.error("Error fetching attributes:", error.message);
+  //     throw error;
+  //   }
+  // }
+  static async getAttributes(user_id) {
     try {
-      const query = `SELECT * FROM CCMS.customer_details`;
-      const [rows] = await pool.query(query);
+      const query = `SELECT * FROM CCMS.customer_details WHERE user_id = ?`;
+      const [rows] = await pool.query(query, [user_id]);
       return rows;
     } catch (error) {
       console.error("Error fetching attributes:", error.message);
       throw error;
     }
   }
+
   static async deleteAttribute(contact_field_id) {
     try {
       const query = `DELETE FROM CCMS.customer_details WHERE contact_field_id = ?`;

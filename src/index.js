@@ -24,23 +24,27 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "CCM APIs",
+      title: "CCM API Documentation",
       version: "1.0.0",
-      description: "API documentation for CCM",
+      description: "API documentation",
     },
     servers: [
       {
-        url: swaggerServerUrl,
+        url: swaggerServerUrl, // Change based on your API URL
       },
     ],
-    tags: [
-      {
-        name: "Users",
-        description: "API for user management ",
+    components: {
+      securitySchemes: {
+        BearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT", // Format of the token
+        },
       },
+    },
+    security: [
       {
-        name: "Customers",
-        description: "API for customer management",
+        BearerAuth: [], // Apply globally
       },
     ],
   },

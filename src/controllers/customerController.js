@@ -50,9 +50,27 @@ class customerController {
       next(error);
     }
   }
+  // static async getAttributes(req, res, next) {
+  //   try {
+  //     const attributes = await customerService.getAttributes();
+  //     customerController.handleResponse(
+  //       res,
+  //       200,
+  //       "Attributes fetched successfully",
+  //       attributes
+  //     );
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // }
   static async getAttributes(req, res, next) {
     try {
-      const attributes = await customerService.getAttributes();
+      const user_id = req.user.user_id; // Extract user_id from token
+      if (!user_id) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      const attributes = await customerService.getAttributes(user_id);
       customerController.handleResponse(
         res,
         200,
@@ -63,6 +81,7 @@ class customerController {
       next(error);
     }
   }
+
   static async deleteAttribute(req, res, next) {
     try {
       const { contact_field_id } = req.params;

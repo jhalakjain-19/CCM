@@ -178,9 +178,11 @@ router.post(
  * @swagger
  * /customer/get-attributes:
  *   get:
- *     summary: Get all attributes
- *     description: Fetches all attributes from the customer details table.
+ *     summary: Get attributes for the logged-in user
+ *     description: Fetches attributes from the customer details table for the authenticated user.
  *     tags: [Customers]
+ *     security:
+ *       - BearerAuth: []  # Requires Bearer Token authentication
  *     responses:
  *       200:
  *         description: Successfully retrieved attributes
@@ -193,28 +195,41 @@ router.post(
  *                 properties:
  *                   contact_field_id:
  *                     type: integer
- *                     example: 1
- *                   customer_id:
+ *                     example: 27
+ *                   user_id:
  *                     type: integer
- *                     example: 101
+ *                     example: 119
  *                   field_name:
  *                     type: string
- *                     example: "Phone"
+ *                     example: "email"
  *                   data_type:
- *                     type: string
- *                     example: "number"
+ *                     type: integer
+ *                     example: 7
  *                   attribute_type:
- *                     type: string
- *                     example: "transaction"
+ *                     type: integer
+ *                     example: 1
  *                   status:
  *                     type: integer
  *                     example: 1
  *                   created_on:
  *                     type: string
  *                     format: date-time
+ *                     example: "2025-02-28 15:35:34"
+ *       400:
+ *         description: User ID is required
+ *       401:
+ *         description: Unauthorized - No token or invalid token
+ *       500:
+ *         description: Internal Server Error
  */
+
 // Get all attribute names
-router.get("/get-attributes", CustomerController.getAttributes);
+// router.get("/get-attributes", CustomerController.getAttributes);
+router.get(
+  "/get-attributes",
+  authenticateUser,
+  CustomerController.getAttributes
+);
 
 /**
  * @swagger

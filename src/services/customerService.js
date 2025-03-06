@@ -9,9 +9,13 @@ class customerService {
   static async createAttribute(req) {
     return await customerModel.createAttribute(req);
   }
-  static async getAttributes() {
-    return await customerModel.getAttributes();
+  // static async getAttributes() {
+  //   return await customerModel.getAttributes();
+  // }
+  static async getAttributes(user_id) {
+    return await customerModel.getAttributes(user_id);
   }
+
   static async deleteAttribute(contact_field_id) {
     try {
       return await customerModel.deleteAttribute(contact_field_id);

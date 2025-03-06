@@ -395,7 +395,7 @@ class UserModel {
   }
   static async getUserDetails(user_id) {
     const [user] = await pool.query(
-      `SELECT user_id, Name, Email, Phone_no, status, created_on 
+      `SELECT user_id, Name, Email, Phone_no, status,permission, created_on 
          FROM users WHERE user_id = ?`,
       [user_id]
     );
