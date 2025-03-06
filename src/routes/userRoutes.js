@@ -7,7 +7,7 @@ const {
   validatePasswordReset,
 } = require("../middlewares/userValidator");
 const router = express.Router();
-
+const authenticateUser = require("../middlewares/auth");
 /**
  * @swagger
  * /users:
@@ -471,4 +471,7 @@ router.post("/users/forgotpassword", UserController.forgotPassword);
  */
 
 router.post("/users/reset-password/:reset_token", UserController.resetPassword);
+
+router.get("/user-details", authenticateUser, UserController.getUserDetails);
+
 module.exports = router;

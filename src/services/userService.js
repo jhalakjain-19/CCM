@@ -102,10 +102,11 @@ class UserService {
       );
     }
 
-    const token = jwt.sign({ id: user.user_id }, JWT_SECRET, {
+    const token = jwt.sign({ user_id: user.user_id }, JWT_SECRET, {
       expiresIn: "1h",
     });
-
+    console.log("token payload", { user_id: user.user_id });
+    console.log("token decoded", jwt.decode(token));
     // Update session token in the database
     await UserModel.updateSessionToken(user.user_id, token);
 
@@ -223,6 +224,9 @@ class UserService {
     } catch (error) {
       return { error: error.message };
     }
+  }
+  static async getUserDetails(user_id) {
+    return await UserModel.getUserDetails(user_id);
   }
 }
 
