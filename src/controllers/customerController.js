@@ -330,5 +330,28 @@ class customerController {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+  static async deleteRecord(req, res) {
+    try {
+      const { user_id } = req.user; // Extract user_id from token
+      const { row_number } = req.params; // Get row_number from URL params
+
+      // Validate input
+      if (!row_number || isNaN(row_number)) {
+        return res.status(400).json({ message: "Invalid row number." });
+      }
+
+      // Call service to delete record
+      const result = await customerService.deleteRecord(user_id, row_number);
+
+      if (!result) {
+        return res.status(404).json({ message: "Record not found." });
+      }
+
+      return res.status(200).json({ message: "Record deleted successfully." });
+    } catch (error) {
+      console.error("Error deleting record:", error.message);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
 }
 module.exports = customerController;

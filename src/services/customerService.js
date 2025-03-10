@@ -24,5 +24,18 @@ class customerService {
       throw error;
     }
   }
+  static async deleteRecord(user_id, row_number) {
+    // Check if the record exists
+    const recordExists = await customerModel.getRecordByRowNumber(
+      user_id,
+      row_number
+    );
+    if (!recordExists) {
+      return false; // Record not found
+    }
+
+    // Delete the record
+    return await customerModel.deleteRecord(user_id, row_number);
+  }
 }
 module.exports = customerService;

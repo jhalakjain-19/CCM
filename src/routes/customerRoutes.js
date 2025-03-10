@@ -340,4 +340,59 @@ router.post(
   CustomerController.importCsv
 );
 
+//route to delete a record row for a user
+/**
+ * @swagger
+ * /customer/delete-record/{row_number}:
+ *   delete:
+ *     summary: Delete a record by row number for a specific user
+ *     description: Deletes a record from the database based on the `row_number` for the authenticated user.
+ *     tags:
+ *       - Customers
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: row_number
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The row number of the record to be deleted.
+ *     responses:
+ *       200:
+ *         description: Record deleted successfully.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Record deleted successfully."
+ *       400:
+ *         description: Invalid row number.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Invalid row number."
+ *       401:
+ *         description: Unauthorized - Token is missing or invalid.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Unauthorized."
+ *       404:
+ *         description: Record not found.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Record not found."
+ *       500:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: "Internal Server Error."
+ */
+router.delete(
+  "/delete-record/:row_number",
+  authenticateUser,
+  CustomerController.deleteRecord
+);
 module.exports = router;
