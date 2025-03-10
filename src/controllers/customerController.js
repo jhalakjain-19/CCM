@@ -330,26 +330,29 @@ class customerController {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
-  static async deleteRecord(req, res) {
+  static async deleteMultipleRecords(req, res) {
     try {
       const { user_id } = req.user; // Extract user_id from token
-      const { row_number } = req.params; // Get row_number from URL params
+      const { row_numbers } = req.body;
 
-      // Validate input
-      if (!row_number || isNaN(row_number)) {
-        return res.status(400).json({ message: "Invalid row number." });
+      if (!Array.isArray(row_numbers) || row_numbers.length === 0) {
+        return res.status(400).json({ message: "Invalid row numbers." });
       }
 
-      // Call service to delete record
-      const result = await customerService.deleteRecord(user_id, row_number);
+      const deletedCount = await customerService.deleteMultipleRecords(
+        user_id,
+        row_numbers
+      );
 
-      if (!result) {
-        return res.status(404).json({ message: "Record not found." });
+      if (deletedCount === 0) {
+        return res.status(404).json({ message: "No records found to delete." });
       }
 
-      return res.status(200).json({ message: "Record deleted successfully." });
+      return res.status(200).json({
+        message: `${deletedCount} record(s) deleted successfully.`,
+      });
     } catch (error) {
-      console.error("Error deleting record:", error.message);
+      console.error("Error deleting records:", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }

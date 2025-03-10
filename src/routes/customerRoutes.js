@@ -343,34 +343,39 @@ router.post(
 //route to delete a record row for a user
 /**
  * @swagger
- * /customer/delete-record/{row_number}:
+ * /customer/delete-records:
  *   delete:
- *     summary: Delete a record by row number for a specific user
- *     description: Deletes a record from the database based on the `row_number` for the authenticated user.
+ *     summary: Delete multiple records by row numbers for a specific user
+ *     description: Deletes multiple records from the database based on provided row numbers for the authenticated user.
  *     tags:
  *       - Customers
  *     security:
  *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: row_number
- *         required: true
- *         schema:
- *           type: integer
- *         description: The row number of the record to be deleted.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               row_numbers:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *                 example: [1, 2, 5]
  *     responses:
  *       200:
- *         description: Record deleted successfully.
+ *         description: Records deleted successfully.
  *         content:
  *           application/json:
  *             example:
- *               message: "Record deleted successfully."
+ *               message: "Records deleted successfully."
  *       400:
- *         description: Invalid row number.
+ *         description: Invalid row numbers provided.
  *         content:
  *           application/json:
  *             example:
- *               message: "Invalid row number."
+ *               message: "Invalid row numbers."
  *       401:
  *         description: Unauthorized - Token is missing or invalid.
  *         content:
@@ -378,11 +383,11 @@ router.post(
  *             example:
  *               message: "Unauthorized."
  *       404:
- *         description: Record not found.
+ *         description: One or more records not found.
  *         content:
  *           application/json:
  *             example:
- *               message: "Record not found."
+ *               message: "Some records were not found."
  *       500:
  *         description: Internal Server Error.
  *         content:
@@ -391,8 +396,8 @@ router.post(
  *               message: "Internal Server Error."
  */
 router.delete(
-  "/delete-record/:row_number",
+  "/delete-records",
   authenticateUser,
-  CustomerController.deleteRecord
+  CustomerController.deleteMultipleRecords
 );
 module.exports = router;

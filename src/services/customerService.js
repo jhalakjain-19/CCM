@@ -24,18 +24,8 @@ class customerService {
       throw error;
     }
   }
-  static async deleteRecord(user_id, row_number) {
-    // Check if the record exists
-    const recordExists = await customerModel.getRecordByRowNumber(
-      user_id,
-      row_number
-    );
-    if (!recordExists) {
-      return false; // Record not found
-    }
-
-    // Delete the record
-    return await customerModel.deleteRecord(user_id, row_number);
+  static async deleteMultipleRecords(user_id, row_numbers) {
+    return await customerModel.deleteMultipleRecords(user_id, row_numbers);
   }
 }
 module.exports = customerService;

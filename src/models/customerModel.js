@@ -122,20 +122,18 @@ class customerModel {
       throw error;
     }
   }
-  static async getRecordByRowNumber(user_id, row_number) {
-    const [result] = await pool.query(
-      `SELECT * FROM CCMS.customer_data WHERE user_id = ? AND row_number = ?`,
-      [user_id, row_number]
-    );
-    return result.length > 0 ? result[0] : null;
-  }
+  static async deleteMultipleRecords(user_id, row_numbers) {
+    try {
+      const deleteQuery = `
+        DELETE FROM CCMS.customer_data 
+        WHERE user_id = ? AND row_number IN (?)
+      `;
 
-  static async deleteRecord(user_id, row_number) {
-    const [result] = await pool.query(
-      `DELETE FROM CCMS.customer_data WHERE user_id = ? AND row_number = ?`,
-      [user_id, row_number]
-    );
-    return result.affectedRows > 0;
+      const [result] = await pool.query(deleteQuery, [user_id, row_numbers]);
+      return result.affectedRows; // Number of rows deleted
+    } catch (error) {
+      throw new Error("Database Error: " + error.message);
+    }
   }
 }
 
