@@ -24,7 +24,7 @@ class customerModel {
   static async createAttribute(req) {
     try {
       // Extract user_id from the token
-      const { id: user_id } = req.user;
+      const { user_id } = req.user;
       const { field_name, data_type, attribute_type } = req.body;
       console.log("user_id", user_id);
       console.log("field_name", field_name);
@@ -49,7 +49,7 @@ class customerModel {
         attribute_type,
       ]);
 
-      return { message: "Attribute created successfully", id: result.insertId };
+      return { message: "Attribute created successfully", user_id };
     } catch (error) {
       console.error("Error creating attribute:", error.message);
       throw error;

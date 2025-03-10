@@ -1,5 +1,5 @@
 const customerService = require("../services/customerService");
-const xlsx = require("xlsx");
+//const xlsx = require("xlsx");
 const pool = require("../config/db");
 class customerController {
   static handleResponse(res, status, message, data = null) {
