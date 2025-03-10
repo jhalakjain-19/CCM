@@ -27,5 +27,8 @@ class customerService {
   static async deleteMultipleRecords(user_id, row_numbers) {
     return await customerModel.deleteMultipleRecords(user_id, row_numbers);
   }
+  static async deleteAllRecords(user_id) {
+    return await customerModel.deleteAllRecords(user_id);
+  }
 }
 module.exports = customerService;

@@ -135,6 +135,19 @@ class customerModel {
       throw new Error("Database Error: " + error.message);
     }
   }
+  static async deleteAllRecords(user_id) {
+    try {
+      const deleteQuery = `
+        DELETE FROM CCMS.customer_data 
+        WHERE user_id = ?
+      `;
+
+      const [result] = await pool.query(deleteQuery, [user_id]);
+      return result.affectedRows; // Number of rows deleted
+    } catch (error) {
+      throw new Error("Database Error: " + error.message);
+    }
+  }
 }
 
 module.exports = customerModel;

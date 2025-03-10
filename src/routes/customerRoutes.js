@@ -400,4 +400,53 @@ router.delete(
   authenticateUser,
   CustomerController.deleteMultipleRecords
 );
+
+//route to delete all records
+/**
+ * @swagger
+ * /customer/delete-all-records:
+ *   delete:
+ *     summary: Delete all records for a specific user
+ *     description: Deletes all customer data rows for the authenticated user.
+ *     tags: [Customers]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: All records deleted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "All records deleted successfully."
+ *       404:
+ *         description: No records found to delete.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "No records found to delete."
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Internal Server Error"
+ */
+router.delete(
+  "/delete-all-records",
+  authenticateUser,
+  CustomerController.deleteAllRecords
+);
+
 module.exports = router;

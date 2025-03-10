@@ -356,5 +356,23 @@ class customerController {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+  static async deleteAllRecords(req, res) {
+    try {
+      const { user_id } = req.user; // Get user_id from token
+
+      const deletedRows = await customerService.deleteAllRecords(user_id);
+
+      if (deletedRows === 0) {
+        return res.status(404).json({ message: "No records found to delete." });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "All records deleted successfully." });
+    } catch (error) {
+      console.error("Error deleting records:", error.message);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
 }
 module.exports = customerController;
