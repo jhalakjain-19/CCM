@@ -7,7 +7,6 @@ const router = express.Router();
  * @swagger
  * tags:
  *   - name: Customers
- *     description: API for customer management
  */
 
 /**
