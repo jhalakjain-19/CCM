@@ -109,7 +109,7 @@ class customerController {
 
   static async importCsv(req, res) {
     try {
-      const { id: user_id } = req.user; // Extract user_id from token
+      const { user_id } = req.user; // Extract user_id from token
       console.log("Received file:", req.file);
 
       // ✅ Validate file upload
