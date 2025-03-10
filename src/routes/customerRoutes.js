@@ -294,6 +294,45 @@ router.delete(
   CustomerController.deleteAttribute
 );
 //Route for import file
+/**
+ * @swagger
+ * /customer/import-csv:
+ *   post:
+ *     summary: Import customer data from CSV
+ *     description: Uploads and processes a CSV file to import customer data.
+ *     tags: [Customers]
+ *     security:
+ *       - BearerAuth: []  # Requires Bearer Token authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: The CSV file to be uploaded
+ *     responses:
+ *       200:
+ *         description: File successfully imported
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "File imported successfully"
+ *       400:
+ *         description: Bad Request - Invalid file format or missing file
+ *       401:
+ *         description: Unauthorized - No token or invalid token
+ *       500:
+ *         description: Internal Server Error
+ */
+
 router.post(
   "/import-csv",
   authenticateUser,
