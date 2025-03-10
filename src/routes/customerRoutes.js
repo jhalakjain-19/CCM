@@ -340,6 +340,4 @@ router.post(
   CustomerController.importCsv
 );
 
-//Route to delete
-
 module.exports = router;

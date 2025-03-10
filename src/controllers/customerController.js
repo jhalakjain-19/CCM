@@ -116,6 +116,107 @@ class customerController {
     }
   }
 
+  // static async importCsv(req, res) {
+  //   try {
+  //     const { user_id } = req.user; // Extract user_id from token
+  //     console.log("Received file:", req.file);
+
+  //     // ✅ Validate file upload
+  //     if (!req.file) {
+  //       return res.status(400).json({ message: "Please upload a CSV file." });
+  //     }
+
+  //     // ✅ Remove BOM and convert file to string
+  //     const fileBuffer = req.file.buffer
+  //       .toString("utf-8")
+  //       .replace(/^\uFEFF/, "");
+  //     const fileStream = fileBuffer
+  //       .split("\n")
+  //       .map((line) => line.trim())
+  //       .filter((line) => line);
+
+  //     // ✅ Ensure file is not empty
+  //     if (fileStream.length === 0) {
+  //       return res.status(400).json({ message: "Uploaded CSV file is empty." });
+  //     }
+
+  //     // ✅ Extract and normalize headers from CSV
+  //     const csvHeaders = fileStream[0]
+  //       .split(",")
+  //       .map((header) => header.trim().toLowerCase().replace(/\s+/g, "_")); // Normalize headers
+  //     console.log("Extracted CSV Headers:", csvHeaders);
+
+  //     // ✅ Fetch existing headers from `customer_details`
+  //     const [dbFields] = await pool.query(
+  //       `SELECT contact_field_id, field_name FROM CCMS.customer_details WHERE user_id = ?`,
+  //       [user_id]
+  //     );
+
+  //     // ✅ Normalize database headers for comparison
+  //     const fieldMap = {};
+  //     dbFields.forEach((field) => {
+  //       fieldMap[field.field_name.toLowerCase().replace(/\s+/g, "_")] =
+  //         field.contact_field_id;
+  //     });
+
+  //     const dbHeaders = Object.keys(fieldMap);
+  //     console.log("Database Headers:", dbHeaders);
+
+  //     // ✅ Check if all CSV headers exist in the database & vice versa
+  //     const missingInDatabase = csvHeaders.filter(
+  //       (header) => !fieldMap[header]
+  //     );
+  //     const missingInCSV = dbHeaders.filter(
+  //       (header) => !csvHeaders.includes(header)
+  //     );
+
+  //     if (missingInDatabase.length > 0 || missingInCSV.length > 0) {
+  //       return res.status(400).json({
+  //         message: `Header mismatch!`,
+  //         missing_in_database:
+  //           missingInDatabase.length > 0 ? missingInDatabase : "None",
+  //         missing_in_csv: missingInCSV.length > 0 ? missingInCSV : "None",
+  //       });
+  //     }
+
+  //     // ✅ Prepare SQL query
+  //     const insertQuery = `
+  //           INSERT INTO CCMS.customer_data (user_id, contact_field_id, field_value, status, created_on)
+  //           VALUES (?, ?, ?, ?, NOW())
+  //       `;
+
+  //     // ✅ Use `for...of` to handle async database inserts properly
+  //     for (const line of fileStream.slice(1)) {
+  //       const values = line.split(",");
+
+  //       if (values.length !== csvHeaders.length) {
+  //         return res
+  //           .status(400)
+  //           .json({ message: "CSV file format is incorrect." });
+  //       }
+
+  //       for (let i = 0; i < csvHeaders.length; i++) {
+  //         const contact_field_id = fieldMap[csvHeaders[i]];
+  //         const field_value = values[i];
+
+  //         await pool.query(insertQuery, [
+  //           user_id,
+  //           contact_field_id,
+  //           field_value,
+  //           1,
+  //         ]);
+  //       }
+  //     }
+
+  //     // ✅ Send success response only once
+  //     return res
+  //       .status(200)
+  //       .json({ message: "CSV data imported successfully!" });
+  //   } catch (error) {
+  //     console.error("Error importing CSV:", error.message);
+  //     return res.status(500).json({ message: "Internal Server Error" });
+  //   }
+  // }
   static async importCsv(req, res) {
     try {
       const { user_id } = req.user; // Extract user_id from token
@@ -126,7 +227,7 @@ class customerController {
         return res.status(400).json({ message: "Please upload a CSV file." });
       }
 
-      // ✅ Remove BOM and convert file to string
+      // ✅ Convert file buffer to string and remove BOM
       const fileBuffer = req.file.buffer
         .toString("utf-8")
         .replace(/^\uFEFF/, "");
@@ -136,15 +237,24 @@ class customerController {
         .filter((line) => line);
 
       // ✅ Ensure file is not empty
-      if (fileStream.length === 0) {
+      if (fileStream.length < 2) {
         return res.status(400).json({ message: "Uploaded CSV file is empty." });
       }
 
-      // ✅ Extract and normalize headers from CSV
+      // ✅ Extract and normalize headers
       const csvHeaders = fileStream[0]
         .split(",")
-        .map((header) => header.trim().toLowerCase().replace(/\s+/g, "_")); // Normalize headers
+        .map((header) => header.trim().toLowerCase().replace(/\s+/g, "_"));
       console.log("Extracted CSV Headers:", csvHeaders);
+
+      // ✅ Fetch the latest `row_number` for this user
+      const [lastRow] = await pool.query(
+        `SELECT MAX(row_number) AS last_row_no FROM CCMS.customer_data WHERE user_id = ?`,
+        [user_id]
+      );
+      let row_number = lastRow?.[0]?.last_row_no
+        ? lastRow[0].last_row_no + 1
+        : 1; // Start from 1 if no previous rows
 
       // ✅ Fetch existing headers from `customer_details`
       const [dbFields] = await pool.query(
@@ -152,7 +262,7 @@ class customerController {
         [user_id]
       );
 
-      // ✅ Normalize database headers for comparison
+      // ✅ Map database headers for validation
       const fieldMap = {};
       dbFields.forEach((field) => {
         fieldMap[field.field_name.toLowerCase().replace(/\s+/g, "_")] =
@@ -162,7 +272,7 @@ class customerController {
       const dbHeaders = Object.keys(fieldMap);
       console.log("Database Headers:", dbHeaders);
 
-      // ✅ Check if all CSV headers exist in the database & vice versa
+      // ✅ Check if all CSV headers exist in the database
       const missingInDatabase = csvHeaders.filter(
         (header) => !fieldMap[header]
       );
@@ -179,13 +289,13 @@ class customerController {
         });
       }
 
-      // ✅ Prepare SQL query
+      // ✅ Prepare SQL query for inserting data (using `row_number` instead of `row_no`)
       const insertQuery = `
-            INSERT INTO CCMS.customer_data (user_id, contact_field_id, field_value, status, created_on)
-            VALUES (?, ?, ?, ?, NOW())
+            INSERT INTO CCMS.customer_data (user_id, row_number, contact_field_id, field_value, status, created_on)
+            VALUES (?, ?, ?, ?, ?, NOW())
         `;
 
-      // ✅ Use `for...of` to handle async database inserts properly
+      // ✅ Insert each row with dynamic row_number
       for (const line of fileStream.slice(1)) {
         const values = line.split(",");
 
@@ -201,14 +311,17 @@ class customerController {
 
           await pool.query(insertQuery, [
             user_id,
+            row_number,
             contact_field_id,
             field_value,
             1,
           ]);
         }
+
+        row_number++; // Increment row_number for the next row
       }
 
-      // ✅ Send success response only once
+      // ✅ Send success response
       return res
         .status(200)
         .json({ message: "CSV data imported successfully!" });
