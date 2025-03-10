@@ -85,6 +85,7 @@ class customerController {
   static async deleteAttribute(req, res, next) {
     try {
       const { contact_field_id } = req.params;
+      const { user_id } = req.user; // Extract user_id from token
 
       if (!contact_field_id) {
         return res
@@ -92,10 +93,19 @@ class customerController {
           .json({ message: "contact_field_id is required" });
       }
 
-      const result = await customerService.deleteAttribute(contact_field_id);
+      if (!user_id) {
+        return res.status(401).json({ message: "Unauthorized access" });
+      }
+
+      const result = await customerService.deleteAttribute(
+        contact_field_id,
+        user_id
+      );
 
       if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Attribute not found" });
+        return res
+          .status(404)
+          .json({ message: "Attribute not found or unauthorized" });
       }
 
       return res

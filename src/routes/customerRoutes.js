@@ -291,6 +291,7 @@ router.get(
 //Route to delete attribute_name by id
 router.delete(
   "/delete-attribute/:contact_field_id",
+  authenticateUser,
   CustomerController.deleteAttribute
 );
 //Route for import file
@@ -339,5 +340,7 @@ router.post(
   upload.single("file"),
   CustomerController.importCsv
 );
+
+//Route to delete
 
 module.exports = router;

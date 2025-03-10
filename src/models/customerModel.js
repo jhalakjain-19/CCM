@@ -77,12 +77,46 @@ class customerModel {
     }
   }
 
-  static async deleteAttribute(contact_field_id) {
-    try {
-      const query = `DELETE FROM CCMS.customer_details WHERE contact_field_id = ?`;
+  // static async deleteAttribute(contact_field_id, user_id) {
+  //   try {
+  //     const query = `DELETE FROM CCMS.customer_details WHERE contact_field_id = ? AND user_id = ?`;
 
-      const [result] = await pool.query(query, [contact_field_id]);
-      return result;
+  //     const [result] = await pool.query(query, [contact_field_id, user_id]);
+  //     return result;
+  //   } catch (error) {
+  //     console.error("Database Error:", error.message);
+  //     throw error;
+  //   }
+  // }
+  static async deleteAttribute(contact_field_id, user_id) {
+    try {
+      const connection = await pool.getConnection();
+      try {
+        await connection.beginTransaction();
+
+        // Delete related records from CCMS.customer_data first
+        const deleteCustomerDataQuery = `DELETE FROM CCMS.customer_data WHERE contact_field_id = ? AND user_id = ?`;
+        await connection.query(deleteCustomerDataQuery, [
+          contact_field_id,
+          user_id,
+        ]);
+
+        // Delete attribute from CCMS.customer_details
+        const deleteAttributeQuery = `DELETE FROM CCMS.customer_details WHERE contact_field_id = ? AND user_id = ?`;
+        const [result] = await connection.query(deleteAttributeQuery, [
+          contact_field_id,
+          user_id,
+        ]);
+
+        await connection.commit();
+        return result;
+      } catch (error) {
+        await connection.rollback();
+        console.error("Transaction Error:", error.message);
+        throw error;
+      } finally {
+        connection.release();
+      }
     } catch (error) {
       console.error("Database Error:", error.message);
       throw error;

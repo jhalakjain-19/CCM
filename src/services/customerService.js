@@ -16,9 +16,9 @@ class customerService {
     return await customerModel.getAttributes(user_id);
   }
 
-  static async deleteAttribute(contact_field_id) {
+  static async deleteAttribute(contact_field_id, user_id) {
     try {
-      return await customerModel.deleteAttribute(contact_field_id);
+      return await customerModel.deleteAttribute(contact_field_id, user_id);
     } catch (error) {
       console.error("Service Error:", error.message);
       throw error;
