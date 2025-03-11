@@ -122,28 +122,98 @@ class customerModel {
       throw error;
     }
   }
+  // static async deleteMultipleRecords(user_id, row_numbers) {
+  //   try {
+  //     const deleteQuery = `
+  //       DELETE FROM CCMS.customer_data
+  //       WHERE user_id = ? AND row_number IN (?)
+  //     `;
+
+  //     const [result] = await pool.query(deleteQuery, [user_id, row_numbers]);
+  //     return result.affectedRows; // Number of rows deleted
+  //   } catch (error) {
+  //     throw new Error("Database Error: " + error.message);
+  //   }
+  // }
   static async deleteMultipleRecords(user_id, row_numbers) {
     try {
-      const deleteQuery = `
-        DELETE FROM CCMS.customer_data 
-        WHERE user_id = ? AND row_number IN (?)
-      `;
+      // ✅ Step 1: Delete from `customer_data`
+      const deleteCustomerDataQuery = `
+            DELETE FROM CCMS.customer_data 
+            WHERE user_id = ? AND customer_user_data_id IN (?)
+        `;
 
-      const [result] = await pool.query(deleteQuery, [user_id, row_numbers]);
-      return result.affectedRows; // Number of rows deleted
+      // ✅ Step 2: Delete from `customer_user_data`
+      const deleteCustomerUserDataQuery = `
+            DELETE FROM CCMS.customer_user_data 
+            WHERE user_id = ? AND customer_user_data_id IN (?)
+        `;
+
+      // Delete from `customer_data`
+      const [customerDataResult] = await pool.query(deleteCustomerDataQuery, [
+        user_id,
+        row_numbers,
+      ]);
+
+      // Delete from `customer_user_data`
+      const [customerUserDataResult] = await pool.query(
+        deleteCustomerUserDataQuery,
+        [user_id, row_numbers]
+      );
+
+      // Total records deleted
+      const totalDeleted =
+        customerDataResult.affectedRows + customerUserDataResult.affectedRows;
+
+      return totalDeleted; // Return number of deleted records
     } catch (error) {
       throw new Error("Database Error: " + error.message);
     }
   }
+
+  // static async deleteAllRecords(user_id) {
+  //   try {
+  //     const deleteQuery = `
+  //       DELETE FROM CCMS.customer_data
+  //       WHERE user_id = ?
+  //     `;
+
+  //     const [result] = await pool.query(deleteQuery, [user_id]);
+  //     return result.affectedRows; // Number of rows deleted
+  //   } catch (error) {
+  //     throw new Error("Database Error: " + error.message);
+  //   }
+  // }
   static async deleteAllRecords(user_id) {
     try {
-      const deleteQuery = `
-        DELETE FROM CCMS.customer_data 
-        WHERE user_id = ?
-      `;
+      // ✅ Step 1: Delete from `customer_data`
+      const deleteCustomerDataQuery = `
+            DELETE FROM CCMS.customer_data 
+            WHERE user_id = ?
+        `;
 
-      const [result] = await pool.query(deleteQuery, [user_id]);
-      return result.affectedRows; // Number of rows deleted
+      // ✅ Step 2: Delete from `customer_user_data`
+      const deleteCustomerUserDataQuery = `
+            DELETE FROM CCMS.customer_user_data 
+            WHERE user_id = ?
+        `;
+
+      // Delete from `customer_data`
+      const [customerDataResult] = await pool.query(deleteCustomerDataQuery, [
+        user_id,
+      ]);
+
+      // Delete from `customer_user_data`
+      const [customerUserDataResult] = await pool.query(
+        deleteCustomerUserDataQuery,
+        [user_id]
+      );
+
+      // Total records deleted
+      const totalDeleted =
+        customerDataResult.affectedRows + customerUserDataResult.affectedRows;
+
+      return totalDeleted; // Return number of deleted records
     } catch (error) {
       throw new Error("Database Error: " + error.message);
     }
