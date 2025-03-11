@@ -30,5 +30,8 @@ class customerService {
   static async deleteAllRecords(user_id) {
     return await customerModel.deleteAllRecords(user_id);
   }
+  static async getAllUserRecords(user_id) {
+    return await customerModel.getAllUserRecords(user_id);
+  }
 }
 module.exports = customerService;

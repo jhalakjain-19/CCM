@@ -379,5 +379,24 @@ class customerController {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+  static async getAllUserRecords(req, res) {
+    try {
+      const { user_id } = req.user; // Extract user_id from token
+
+      // Call service function to fetch records
+      const userRecords = await customerService.getAllUserRecords(user_id);
+
+      if (!userRecords || userRecords.length === 0) {
+        return res
+          .status(404)
+          .json({ message: "No records found for this user." });
+      }
+
+      return res.status(200).json(userRecords);
+    } catch (error) {
+      console.error("Error fetching records:", error.message);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
 }
 module.exports = customerController;

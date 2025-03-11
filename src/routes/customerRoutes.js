@@ -449,4 +449,43 @@ router.delete(
   CustomerController.deleteAllRecords
 );
 
+//show imported data for a user
+/**
+ * @swagger
+ * /customer/get-user-records:
+ *   get:
+ *     summary: Get all customer details along with field names for a particular user
+ *     description: Fetches all customer records along with field names for a given user.
+ *     tags:
+ *       - Customers
+ *     security:
+ *       - BearerAuth: []
+ *
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved user records.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 fields:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       404:
+ *         description: No records found for this user.
+ *       500:
+ *         description: Internal Server Error.
+ */
+router.get(
+  "/get-user-records",
+  authenticateUser,
+  CustomerController.getAllUserRecords
+);
+
 module.exports = router;
