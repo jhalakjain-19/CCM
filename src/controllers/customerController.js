@@ -219,7 +219,7 @@ class customerController {
   // }
   static async importCsv(req, res) {
     try {
-      const { user_id } = req.user; // Extract user_id from token
+      const { user_id } = req.user;
       console.log("Received file:", req.file);
 
       // ✅ Validate file upload
@@ -246,15 +246,6 @@ class customerController {
         .split(",")
         .map((header) => header.trim().toLowerCase().replace(/\s+/g, "_"));
       console.log("Extracted CSV Headers:", csvHeaders);
-
-      // ✅ Fetch the latest `row_number` for this user
-      const [lastRow] = await pool.query(
-        `SELECT MAX(row_number) AS last_row_no FROM CCMS.customer_data WHERE user_id = ?`,
-        [user_id]
-      );
-      let row_number = lastRow?.[0]?.last_row_no
-        ? lastRow[0].last_row_no + 1
-        : 1; // Start from 1 if no previous rows
 
       // ✅ Fetch existing headers from `customer_details`
       const [dbFields] = await pool.query(
@@ -289,13 +280,17 @@ class customerController {
         });
       }
 
-      // ✅ Prepare SQL query for inserting data (using `row_number` instead of `row_no`)
-      const insertQuery = `
-            INSERT INTO CCMS.customer_data (user_id, row_number, contact_field_id, field_value, status, created_on)
+      // ✅ Prepare SQL queries
+      const insertCustomerUserDataQuery = `
+            INSERT INTO CCMS.customer_user_data (user_id, status, created_on) VALUES (?, ?, NOW())
+        `;
+
+      const insertCustomerDataQuery = `
+            INSERT INTO CCMS.customer_data (user_id, customer_user_data_id, contact_field_id, field_value, status, created_on)
             VALUES (?, ?, ?, ?, ?, NOW())
         `;
 
-      // ✅ Insert each row with dynamic row_number
+      // ✅ Insert each row separately with a unique `customer_user_data_id`
       for (const line of fileStream.slice(1)) {
         const values = line.split(",");
 
@@ -305,31 +300,41 @@ class customerController {
             .json({ message: "CSV file format is incorrect." });
         }
 
+        // Generate a new `customer_user_data_id` for each row
+        const [result] = await pool.query(insertCustomerUserDataQuery, [
+          user_id,
+          1,
+        ]);
+        const customer_user_data_id = result.insertId;
+
+        console.log(
+          "Generated customer_user_data_id for row:",
+          customer_user_data_id
+        );
+
         for (let i = 0; i < csvHeaders.length; i++) {
           const contact_field_id = fieldMap[csvHeaders[i]];
           const field_value = values[i];
 
-          await pool.query(insertQuery, [
+          await pool.query(insertCustomerDataQuery, [
             user_id,
-            row_number,
+            customer_user_data_id, // Unique ID per row
             contact_field_id,
             field_value,
             1,
           ]);
         }
-
-        row_number++; // Increment row_number for the next row
       }
 
-      // ✅ Send success response
       return res
         .status(200)
-        .json({ message: "CSV data imported successfully!" });
+        .json({ message: "CSV data imported successfully with unique IDs!" });
     } catch (error) {
       console.error("Error importing CSV:", error.message);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+
   static async deleteMultipleRecords(req, res) {
     try {
       const { user_id } = req.user; // Extract user_id from token
