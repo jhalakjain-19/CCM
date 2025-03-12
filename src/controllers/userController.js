@@ -81,7 +81,7 @@ class UserController {
         newUser
       );
     } catch (error) {
-      //next(error);
+      next(error);
     }
   }
   static async updateUser(req, res, next) {
