@@ -194,7 +194,8 @@ class UserService {
       console.log(encryptedToken);
       // Construct the reset link with the encrypted token
       // const resetLink = `http://localhost:1106/api/users/reset-password/${encryptedToken}`;
-      const resetLink = `https://ccmapi.development-review.net/api/users/reset-password/${encryptedToken}`;
+      //const resetLink = `https://ccmapi.development-review.net/api/users/reset-password/${encryptedToken}`;
+      const resetLink = `http://localhost:3000/#/resetpassword?token=${encryptedToken}`;
 
       console.log(resetLink);
 
