@@ -400,15 +400,25 @@ class customerController {
       const userRecords = await customerService.getAllUserRecords(user_id);
 
       if (!userRecords || userRecords.length === 0) {
-        return res
-          .status(404)
-          .json({ message: "No records found for this user." });
+        return res.status(404).json({
+          status: 404,
+          message: "No records found for this user.",
+          data: [],
+        });
       }
 
-      return res.status(200).json(userRecords);
+      return res.status(200).json({
+        status: 200,
+        message: "User records retrieved successfully.",
+        data: userRecords,
+      });
     } catch (error) {
       console.error("Error fetching records:", error.message);
-      return res.status(500).json({ message: "Internal Server Error" });
+      return res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+        data: [],
+      });
     }
   }
 }
