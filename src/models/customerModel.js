@@ -234,27 +234,37 @@ class customerModel {
   // }
   static async getAllUserRecords(user_id) {
     try {
-      // Get field names from customer_details for the given user_id
-      const fieldQuery = `
-            SELECT field_name FROM CCMS.customer_details 
-            WHERE user_id = ?;
-        `;
+      // Get field names for the user
+      const fieldQuery = `SELECT contact_field_id, field_name FROM CCMS.customer_details WHERE user_id = ?`;
       const [fieldRows] = await pool.query(fieldQuery, [user_id]);
 
-      // Extract field names into an array
-      const fieldNames = fieldRows.map((row) => row.field_name);
+      // Create a mapping of contact_field_id to field_name
+      const fieldMap = {};
+      fieldRows.forEach((row) => {
+        fieldMap[row.contact_field_id] = row.field_name;
+      });
 
-      // Get user data from customer_data for the given user_id
-      const dataQuery = `
-            SELECT * FROM CCMS.customer_data 
-            WHERE user_id = ?;
-        `;
+      // Fetch user data from customer_data
+      const dataQuery = `SELECT * FROM CCMS.customer_data WHERE user_id = ?`;
       const [dataRows] = await pool.query(dataQuery, [user_id]);
 
-      return {
-        fields: fieldNames, // Field names from customer_details
-        data: dataRows, // User records from customer_data
-      };
+      // Organize the data correctly
+      const formattedData = {};
+      dataRows.forEach((row) => {
+        const recordId = row.customer_user_data_id;
+
+        if (!formattedData[recordId]) {
+          formattedData[recordId] = { customer_user_data_id: recordId };
+        }
+
+        const fieldName = fieldMap[row.contact_field_id]; // Map field ID to field name
+        if (fieldName) {
+          formattedData[recordId][fieldName] = row.field_value;
+        }
+      });
+
+      // Convert formattedData object into an array
+      return Object.values(formattedData); // Only return data, no fields array
     } catch (error) {
       throw new Error("Database Error: " + error.message);
     }
