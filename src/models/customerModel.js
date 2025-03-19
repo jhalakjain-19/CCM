@@ -48,20 +48,32 @@ class customerModel {
         customOptions = JSON.stringify(custom_options_value);
       }
 
-      const query = `
-            INSERT INTO CCMS.customer_details (user_id, field_name, data_type, attribute_type, custom_options_value)
-            VALUES (?, ?, ?, ?, ?)
+      // Fetch the highest order_no for the given user_id
+      const orderQuery = `SELECT MAX(order_no) AS max_order FROM CCMS.customer_details WHERE user_id = ?`;
+      const [orderResult] = await pool.query(orderQuery, [user_id]);
+
+      let newOrderNo = (orderResult[0].max_order || 0) + 1; // Increment the highest order_no by 1
+
+      // Insert the new attribute with the incremented order_no
+      const insertQuery = `
+            INSERT INTO CCMS.customer_details (user_id, field_name, data_type, attribute_type, custom_options_value, order_no)
+            VALUES (?, ?, ?, ?, ?, ?)
         `;
 
-      await pool.query(query, [
+      await pool.query(insertQuery, [
         user_id,
         field_name,
         data_type,
         attribute_type,
-        customOptions, // Store JSON object, not string
+        customOptions, // Store JSON object
+        newOrderNo, // Auto-incremented order_no
       ]);
 
-      return { message: "Attribute created successfully", user_id };
+      return {
+        message: "Attribute created successfully",
+        user_id,
+        order_no: newOrderNo,
+      };
     } catch (error) {
       console.error("Error creating attribute:", error.message);
       throw error;

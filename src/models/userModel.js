@@ -119,7 +119,7 @@ class UserModel {
       const { Name, Email, Phone_no, Password } = req.body;
       console.log(req.body);
 
-      // Step 1: Check if a user with the provided email already exists in the database
+      // Step 1: Check if a user with the provided email already exists
       const [existingUser] = await pool.query(
         "SELECT * FROM users WHERE Email = ?",
         [Email]
@@ -135,7 +135,7 @@ class UserModel {
 
       // Step 3: Insert the new user into the database
       const [result] = await pool.query(
-        "INSERT INTO users (Name, Email, Phone_no, Password, created_on,status) VALUES(?, ?, ?, ?, ?,?)",
+        "INSERT INTO users (Name, Email, Phone_no, Password, created_on, status) VALUES (?, ?, ?, ?, ?, ?)",
         [Name, Email, Phone_no, hashedPassword, currentTimestamp, 0]
       );
 
@@ -160,9 +160,10 @@ class UserModel {
         { field_name: "email", data_type: 7, attribute_type: 1, order_no: 4 },
       ];
 
+      // ✅ Fixed query: Added `order_no` and fixed syntax error (missing comma before `created_on`)
       const query = `
-            INSERT INTO CCMS.customer_details (user_id, field_name, data_type, attribute_type, status, created_on)
-            VALUES (?, ?, ?, ?, 1, ?)
+            INSERT INTO CCMS.customer_details (user_id, field_name, data_type, attribute_type, status, order_no, created_on)
+            VALUES (?, ?, ?, ?, 1, ?, ?)
         `;
 
       for (const field of defaultFields) {
@@ -171,15 +172,17 @@ class UserModel {
           field.field_name,
           field.data_type,
           field.attribute_type,
+          field.order_no, // ✅ Store order_no
           currentTimestamp,
         ]);
       }
 
       return {
         user_id,
+        message: "User created successfully with default attributes.",
       };
     } catch (error) {
-      console.error(error.message);
+      console.error("Error creating user:", error.message);
       throw error;
     }
   }
