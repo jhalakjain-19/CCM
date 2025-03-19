@@ -499,7 +499,7 @@ router.get(
  * @swagger
  * /customer/set-order/{contact_field_id}:
  *   put:
- *     summary: Update order number for a specific contact field and authenticated user
+ *     summary: Update order number of attributes for a specific contact field and authenticated user
  *     description: Updates the order_no of a specific contact_field_id for the authenticated user.
  *     tags: [Customers]
  *     security:

@@ -92,7 +92,7 @@ class customerModel {
   // }
   static async getAttributes(user_id) {
     try {
-      const query = `SELECT * FROM CCMS.customer_details WHERE user_id = ?`;
+      const query = `SELECT * FROM CCMS.customer_details WHERE user_id = ? ORDER BY order_no ASC `;
       const [rows] = await pool.query(query, [user_id]);
 
       // Convert custom_options_value from string to array if not null
