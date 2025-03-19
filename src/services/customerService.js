@@ -33,5 +33,27 @@ class customerService {
   static async getAllUserRecords(user_id) {
     return await customerModel.getAllUserRecords(user_id);
   }
+  static async setOrderNo(user_id, contact_field_id, order_no) {
+    try {
+      if (!user_id || !contact_field_id || order_no === undefined) {
+        throw new Error("user_id, contact_field_id, and order_no are required");
+      }
+
+      const result = await customerModel.updateOrderNo(
+        user_id,
+        contact_field_id,
+        order_no
+      );
+
+      if (result.affectedRows === 0) {
+        return { success: false, message: "No matching record found" };
+      }
+
+      return { success: true, message: "Order number updated successfully" };
+    } catch (error) {
+      console.error("Error in service:", error.message);
+      throw error;
+    }
+  }
 }
 module.exports = customerService;

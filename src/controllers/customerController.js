@@ -421,5 +421,27 @@ class customerController {
       });
     }
   }
+  static async setOrder(req, res) {
+    try {
+      const { order_no } = req.body;
+      const { contact_field_id } = req.params; // Extract contact_field_id from URL
+      const { user_id } = req.user; // Extract user_id from token
+
+      const result = await customerService.setOrderNo(
+        user_id,
+        contact_field_id,
+        order_no
+      );
+
+      if (!result.success) {
+        return res.status(404).json({ message: result.message });
+      }
+
+      return res.status(200).json({ message: result.message });
+    } catch (error) {
+      console.error("Error in controller:", error.message);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
 }
 module.exports = customerController;

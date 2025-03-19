@@ -119,6 +119,12 @@ router.get("/data-types", CustomerController.getDataTypes);
  *                 type: integer
  *                 example: 1
  *                 description: The type of attribute.
+ *               custom_options_value:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["option1", "option2", "option3"]
+ *                 description: Required when data_type is 8, stores comma-separated values.
  *     responses:
  *       201:
  *         description: Attribute created successfully.
@@ -488,4 +494,92 @@ router.get(
   CustomerController.getAllUserRecords
 );
 
+//set order_no of attributes
+/**
+ * @swagger
+ * /customer/set-order/{contact_field_id}:
+ *   put:
+ *     summary: Update order number for a specific contact field and authenticated user
+ *     description: Updates the order_no of a specific contact_field_id for the authenticated user.
+ *     tags: [Customers]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: contact_field_id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the contact field to be updated.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - order_no
+ *             properties:
+ *               order_no:
+ *                 type: integer
+ *                 example: 2
+ *                 description: The new order number.
+ *     responses:
+ *       200:
+ *         description: Order number updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Order number updated successfully"
+ *       400:
+ *         description: Bad request - Missing required fields.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "order_no is required"
+ *       401:
+ *         description: Unauthorized - Token is missing or invalid.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Unauthorized access"
+ *       404:
+ *         description: Not Found - No matching record found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "No matching record found"
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Internal Server Error"
+ */
+
+router.put(
+  "/set-order/:contact_field_id",
+  authenticateUser,
+  CustomerController.setOrder
+);
 module.exports = router;

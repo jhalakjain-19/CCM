@@ -144,10 +144,20 @@ class UserModel {
 
       // Step 4: Insert default attributes for the new user
       const defaultFields = [
-        { field_name: "first_name", data_type: 4, attribute_type: 1 },
-        { field_name: "last_name", data_type: 4, attribute_type: 1 },
-        { field_name: "city", data_type: 4, attribute_type: 1 },
-        { field_name: "email", data_type: 7, attribute_type: 1 },
+        {
+          field_name: "first_name",
+          data_type: 4,
+          attribute_type: 1,
+          order_no: 1,
+        },
+        {
+          field_name: "last_name",
+          data_type: 4,
+          attribute_type: 1,
+          order_no: 2,
+        },
+        { field_name: "city", data_type: 4, attribute_type: 1, order_no: 3 },
+        { field_name: "email", data_type: 7, attribute_type: 1, order_no: 4 },
       ];
 
       const query = `

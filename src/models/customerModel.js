@@ -23,30 +23,42 @@ class customerModel {
   }
   static async createAttribute(req) {
     try {
-      // Extract user_id from the token
       const { user_id } = req.user;
-      const { field_name, data_type, attribute_type } = req.body;
-      console.log("user_id", user_id);
-      console.log("field_name", field_name);
-      console.log("data_type", data_type);
-      // Validate required fields
-      if (!user_id) {
+      const { field_name, data_type, attribute_type, custom_options_value } =
+        req.body;
+
+      if (!user_id || !field_name || !data_type || !attribute_type) {
         throw new Error(
           "user_id, field_name, data_type, and attribute_type are required"
         );
       }
 
-      // Insert into database
-      const query = `
-        INSERT INTO CCMS.customer_details (user_id, field_name, data_type, attribute_type)
-        VALUES (?, ?, ?, ?)
-      `;
+      let customOptions = null;
 
-      const [result] = await pool.query(query, [
+      // Ensure custom_options_value is stored as a proper JSON array if data_type is 8
+      if (data_type === 8) {
+        if (
+          !Array.isArray(custom_options_value) ||
+          custom_options_value.length === 0
+        ) {
+          throw new Error(
+            "custom_options_value must be a non-empty array when data_type is 8"
+          );
+        }
+        customOptions = JSON.stringify(custom_options_value);
+      }
+
+      const query = `
+            INSERT INTO CCMS.customer_details (user_id, field_name, data_type, attribute_type, custom_options_value)
+            VALUES (?, ?, ?, ?, ?)
+        `;
+
+      await pool.query(query, [
         user_id,
         field_name,
         data_type,
         attribute_type,
+        customOptions, // Store JSON object, not string
       ]);
 
       return { message: "Attribute created successfully", user_id };
@@ -70,7 +82,16 @@ class customerModel {
     try {
       const query = `SELECT * FROM CCMS.customer_details WHERE user_id = ?`;
       const [rows] = await pool.query(query, [user_id]);
-      return rows;
+
+      // Convert custom_options_value from string to array if not null
+      const attributes = rows.map((row) => ({
+        ...row,
+        custom_options_value: row.custom_options_value
+          ? JSON.parse(row.custom_options_value) // Convert from string back to array
+          : null,
+      }));
+
+      return attributes;
     } catch (error) {
       console.error("Error fetching attributes:", error.message);
       throw error;
@@ -267,6 +288,25 @@ class customerModel {
       return Object.values(formattedData); // Only return data, no fields array
     } catch (error) {
       throw new Error("Database Error: " + error.message);
+    }
+  }
+  static async updateOrderNo(user_id, contact_field_id, order_no) {
+    try {
+      const query = `
+            UPDATE CCMS.customer_details
+            SET order_no = ?
+            WHERE user_id = ? AND contact_field_id = ?
+        `;
+      const [result] = await pool.query(query, [
+        order_no,
+        user_id,
+        contact_field_id,
+      ]);
+
+      return result;
+    } catch (error) {
+      console.error("Error updating order number in model:", error.message);
+      throw error;
     }
   }
 }
