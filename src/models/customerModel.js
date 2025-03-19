@@ -302,22 +302,70 @@ class customerModel {
       throw new Error("Database Error: " + error.message);
     }
   }
-  static async updateOrderNo(user_id, contact_field_id, order_no) {
+  static async updateOrderNo(user_id, contact_field_id, new_order_no) {
     try {
-      const query = `
-            UPDATE CCMS.customer_details
-            SET order_no = ?
+      // Get the current order_no of the dragged field
+      const getCurrentOrderQuery = `
+            SELECT order_no FROM CCMS.customer_details
             WHERE user_id = ? AND contact_field_id = ?
         `;
-      const [result] = await pool.query(query, [
-        order_no,
+      const [currentOrderResult] = await pool.query(getCurrentOrderQuery, [
         user_id,
         contact_field_id,
       ]);
 
-      return result;
+      if (currentOrderResult.length === 0) {
+        throw new Error(
+          "Field not found for given user_id and contact_field_id"
+        );
+      }
+
+      const current_order_no = currentOrderResult[0].order_no;
+
+      if (current_order_no === new_order_no) {
+        return { message: "No changes needed, same order_no" };
+      }
+
+      let shiftQuery = "";
+      let shiftParams = [];
+
+      // Case 1: Moving UP (e.g., order_no 6 → 1)
+      if (current_order_no > new_order_no) {
+        shiftQuery = `
+                UPDATE CCMS.customer_details
+                SET order_no = order_no + 1
+                WHERE user_id = ? AND order_no >= ? AND order_no < ?
+            `;
+        shiftParams = [user_id, new_order_no, current_order_no];
+
+        // Case 2: Moving DOWN (e.g., order_no 1 → 6)
+      } else {
+        shiftQuery = `
+                UPDATE CCMS.customer_details
+                SET order_no = order_no - 1
+                WHERE user_id = ? AND order_no > ? AND order_no <= ?
+            `;
+        shiftParams = [user_id, current_order_no, new_order_no];
+      }
+
+      // Shift other fields
+      await pool.query(shiftQuery, shiftParams);
+
+      // Set the new order_no for the dragged field
+      const updateDraggedFieldQuery = `
+            UPDATE CCMS.customer_details
+            SET order_no = ?
+            WHERE user_id = ? AND contact_field_id = ?
+        `;
+      await pool.query(updateDraggedFieldQuery, [
+        new_order_no,
+        user_id,
+        contact_field_id,
+      ]);
+
+      return { message: "Order numbers updated successfully" };
     } catch (error) {
-      console.error("Error updating order number in model:", error.message);
+      console.error("Error updating order number:", error.message);
       throw error;
     }
   }
