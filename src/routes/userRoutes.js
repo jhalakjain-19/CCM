@@ -526,4 +526,74 @@ router.post("/users/reset-password/:reset_token", UserController.resetPassword);
  *         description: Internal server error
  */
 router.get("/user-details", authenticateUser, UserController.getUserDetails);
+
+//create user by admin api
+/**
+ * @swagger
+ * /user-by-admin:
+ *   post:
+ *     summary: Create a new user by admin
+ *     description: Admin can create a new user, and a password reset email will be sent to the user.
+ *     tags:
+ *       - Users
+ *     security:
+ *       - BearerAuth: []  # If authentication is required
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - Name
+ *               - Email
+ *               - Phone_no
+ *             properties:
+ *               Name:
+ *                 type: string
+ *                 example: "John Doe"
+ *               Email:
+ *                 type: string
+ *                 format: email
+ *                 example: "johndoe@example.com"
+ *               Phone_no:
+ *                 type: string
+ *                 pattern: "^[0-9]{10,15}$"
+ *                 example: "9876543210"
+ *     responses:
+ *       201:
+ *         description: User created successfully, and password reset email sent.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user_id:
+ *                   type: integer
+ *                   example: 123
+ *                 message:
+ *                   type: string
+ *                   example: "User created successfully. Password reset email sent."
+ *       400:
+ *         description: Bad request (validation errors)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Email is already in use."
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Something went wrong. Please try again later."
+ */
+router.post("/user-by-admin", UserController.createUserByAdmin);
 module.exports = router;

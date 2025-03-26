@@ -297,5 +297,16 @@ class UserController {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+  static async createUserByAdmin(req, res, next) {
+    try {
+      const newUser = await UserService.createUserByAdmin(req);
+      res.status(201).json({
+        message: "User created successfully. Password reset email sent.",
+        user: newUser,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 module.exports = UserController;

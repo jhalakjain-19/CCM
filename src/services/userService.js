@@ -229,6 +229,50 @@ class UserService {
   static async getUserDetails(user_id) {
     return await UserModel.getUserDetails(user_id);
   }
+  static async createUserByAdmin(req) {
+    try {
+      const currentTimestamp = new Date();
+      const { Name, Email, Phone_no } = req.body;
+
+      console.log(req.body);
+
+      // Step 1: Check if email already exists
+      const existingUser = await UserModel.getUserByEmail(Email);
+      if (existingUser) {
+        // ✅ Check if the user exists instead of using `.length`
+        throw new Error("Email is already in use.");
+      }
+
+      // Step 2: Generate a temporary password
+      const tempPassword = Math.random().toString(36).slice(-8);
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(tempPassword, salt);
+
+      // Step 3: Insert the new user into the database
+      const user_id = await UserModel.createUserByAdmin({
+        Name,
+        Email,
+        Phone_no,
+        hashedPassword,
+        created_on: currentTimestamp,
+      });
+
+      // Step 4: Insert default attributes
+      await UserModel.insertDefaultAttributes(user_id, currentTimestamp);
+
+      // Step 5: Send password reset email
+      //await sendMail(Email, subject, content);
+      await this.forgotPassword(Email);
+
+      return {
+        user_id,
+        message: "User created successfully. Password reset email sent.",
+      };
+    } catch (error) {
+      console.error("Error creating user:", error.message);
+      throw error;
+    }
+  }
 }
 
 module.exports = UserService;

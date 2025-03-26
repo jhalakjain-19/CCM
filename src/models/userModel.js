@@ -415,6 +415,47 @@ class UserModel {
 
     return user.length ? user[0] : null; // Return user if found, else null
   }
+  static async createUserByAdmin({
+    Name,
+    Email,
+    Phone_no,
+    hashedPassword,
+    created_on,
+  }) {
+    const [result] = await pool.query(
+      "INSERT INTO users (Name, Email, Phone_no, Password, created_on, status) VALUES (?, ?, ?, ?, ?, ?)",
+      [Name, Email, Phone_no, hashedPassword, created_on, 1]
+    );
+    return result.insertId;
+  }
+
+  static async insertDefaultAttributes(user_id, created_on) {
+    const defaultFields = [
+      {
+        field_name: "first_name",
+        data_type: 4,
+        attribute_type: 1,
+        order_no: 1,
+      },
+      { field_name: "last_name", data_type: 4, attribute_type: 1, order_no: 2 },
+      { field_name: "city", data_type: 4, attribute_type: 1, order_no: 3 },
+      { field_name: "email", data_type: 7, attribute_type: 1, order_no: 4 },
+    ];
+
+    const query = `INSERT INTO CCMS.customer_details (user_id, field_name, data_type, attribute_type, status, order_no, created_on)
+      VALUES (?, ?, ?, ?, 1, ?, ?)`;
+
+    for (const field of defaultFields) {
+      await pool.query(query, [
+        user_id,
+        field.field_name,
+        field.data_type,
+        field.attribute_type,
+        field.order_no,
+        created_on,
+      ]);
+    }
+  }
 }
 
 module.exports = UserModel;
