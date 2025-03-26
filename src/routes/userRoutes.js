@@ -533,7 +533,7 @@ router.get("/user-details", authenticateUser, UserController.getUserDetails);
  * /user-by-admin:
  *   post:
  *     summary: Create a new user by admin
- *     description: Admin can create a new user, and a password reset email will be sent to the user.
+ *     description: Admin can create a new user, assign packages, and a password reset email will be sent to the user.
  *     tags:
  *       - Users
  *     security:
@@ -548,6 +548,7 @@ router.get("/user-details", authenticateUser, UserController.getUserDetails);
  *               - Name
  *               - Email
  *               - Phone_no
+ *               - Packages
  *             properties:
  *               Name:
  *                 type: string
@@ -560,6 +561,10 @@ router.get("/user-details", authenticateUser, UserController.getUserDetails);
  *                 type: string
  *                 pattern: "^[0-9]{10,15}$"
  *                 example: "9876543210"
+ *               Packages:
+ *                 type: string
+ *                 description: "Comma-separated list of package IDs"
+ *                 example: "1,4"
  *     responses:
  *       201:
  *         description: User created successfully, and password reset email sent.

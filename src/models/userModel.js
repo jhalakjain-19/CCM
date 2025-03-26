@@ -421,10 +421,11 @@ class UserModel {
     Phone_no,
     hashedPassword,
     created_on,
+    Packages,
   }) {
     const [result] = await pool.query(
-      "INSERT INTO users (Name, Email, Phone_no, Password, created_on, status) VALUES (?, ?, ?, ?, ?, ?)",
-      [Name, Email, Phone_no, hashedPassword, created_on, 1]
+      "INSERT INTO users (Name, Email, Phone_no, Password, created_on, status,permission) VALUES (?, ?, ?, ?, ?, ?,?)",
+      [Name, Email, Phone_no, hashedPassword, created_on, 1, Packages]
     );
     return result.insertId;
   }

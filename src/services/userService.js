@@ -232,7 +232,7 @@ class UserService {
   static async createUserByAdmin(req) {
     try {
       const currentTimestamp = new Date();
-      const { Name, Email, Phone_no } = req.body;
+      const { Name, Email, Phone_no, Packages } = req.body;
 
       console.log(req.body);
 
@@ -255,6 +255,7 @@ class UserService {
         Phone_no,
         hashedPassword,
         created_on: currentTimestamp,
+        Packages,
       });
 
       // Step 4: Insert default attributes
