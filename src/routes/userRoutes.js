@@ -96,7 +96,7 @@ router.delete("/users/:user_id", UserController.deleteUser);
  *   post:
  *     summary: Create a new user
  *     tags:
- *      - Users
+ *       - Users
  *     description: Create a new user in the database.
  *     requestBody:
  *       required: true
@@ -107,18 +107,63 @@ router.delete("/users/:user_id", UserController.deleteUser);
  *             properties:
  *               Name:
  *                 type: string
+ *                 example: "John Doe"
  *               Email:
  *                 type: string
+ *                 format: email
+ *                 example: "johndoe@example.com"
  *               Phone_no:
  *                 type: string
+ *                 pattern: "^[0-9]{10,15}$"
+ *                 example: "9876543210"
  *               Password:
  *                 type: string
- *
+ *                 format: password
+ *                 example: "securepassword123"
  *     responses:
  *       201:
  *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user_id:
+ *                   type: integer
+ *                   example: 123
+ *                 message:
+ *                   type: string
+ *                   example: "User created successfully."
  *       400:
- *         description: User creation unsuccessful
+ *         description: Bad request (validation errors)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "User creation unsuccessful."
+ *       409:
+ *         description: Conflict (Email already in use)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Email is already in use."
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Something went wrong. Please try again later."
  */
 
 router.post("/users", validateUser, UserController.createUser);

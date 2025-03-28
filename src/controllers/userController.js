@@ -71,7 +71,7 @@ class UserController {
       next(error);
     }
   }
-  static async createUser(req, res) {
+  static async createUser(req, res, next) {
     try {
       const newUser = await UserService.createUser(req);
       UserController.handleResponse(
@@ -81,7 +81,7 @@ class UserController {
         newUser
       );
     } catch (error) {
-      next(error);
+      return next(error);
     }
   }
   static async updateUser(req, res, next) {
