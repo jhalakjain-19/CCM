@@ -127,22 +127,59 @@ class customerModel {
       try {
         await connection.beginTransaction();
 
+        // Get the order_no of the field being deleted
+        const getOrderNoQuery = `
+                SELECT order_no FROM CCMS.customer_details 
+                WHERE contact_field_id = ? AND user_id = ?
+            `;
+        const [orderResult] = await connection.query(getOrderNoQuery, [
+          contact_field_id,
+          user_id,
+        ]);
+
+        if (orderResult.length === 0) {
+          throw new Error("Attribute not found");
+        }
+
+        const { order_no } = orderResult[0];
+
         // Delete related records from CCMS.customer_data first
-        const deleteCustomerDataQuery = `DELETE FROM CCMS.customer_data WHERE contact_field_id = ? AND user_id = ?`;
+        const deleteCustomerDataQuery = `
+                DELETE FROM CCMS.customer_data 
+                WHERE contact_field_id = ? AND user_id = ?
+            `;
         await connection.query(deleteCustomerDataQuery, [
           contact_field_id,
           user_id,
         ]);
 
         // Delete attribute from CCMS.customer_details
-        const deleteAttributeQuery = `DELETE FROM CCMS.customer_details WHERE contact_field_id = ? AND user_id = ?`;
-        const [result] = await connection.query(deleteAttributeQuery, [
+        const deleteAttributeQuery = `
+                DELETE FROM CCMS.customer_details 
+                WHERE contact_field_id = ? AND user_id = ?
+            `;
+        const [deleteResult] = await connection.query(deleteAttributeQuery, [
           contact_field_id,
           user_id,
         ]);
 
+        if (deleteResult.affectedRows === 0) {
+          throw new Error("No matching record found");
+        }
+
+        // Shift order_no of remaining fields down by 1
+        const shiftOrderQuery = `
+                UPDATE CCMS.customer_details 
+                SET order_no = order_no - 1 
+                WHERE user_id = ? AND order_no > ?
+            `;
+        await connection.query(shiftOrderQuery, [user_id, order_no]);
+
         await connection.commit();
-        return result;
+        return {
+          success: true,
+          message: "Attribute deleted and order numbers updated successfully",
+        };
       } catch (error) {
         await connection.rollback();
         console.error("Transaction Error:", error.message);
@@ -155,6 +192,7 @@ class customerModel {
       throw error;
     }
   }
+
   // static async deleteMultipleRecords(user_id, row_numbers) {
   //   try {
   //     const deleteQuery = `
