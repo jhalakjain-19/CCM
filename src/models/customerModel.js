@@ -407,6 +407,28 @@ class customerModel {
       throw error;
     }
   }
+  static async fetchAllCustomerData(user_id) {
+    try {
+      const [rows] = await pool.query(
+        `
+        SELECT 
+          cud.customer_user_data_id AS id,
+          GROUP_CONCAT(cd.field_name ORDER BY cd.contact_field_id) AS headers,
+          GROUP_CONCAT(cdata.field_value ORDER BY cd.contact_field_id) AS field_values
+        FROM CCMS.customer_user_data cud
+        JOIN CCMS.customer_data cdata ON cud.customer_user_data_id = cdata.customer_user_data_id
+        JOIN CCMS.customer_details cd ON cd.contact_field_id = cdata.contact_field_id
+        WHERE cud.user_id = ?
+        GROUP BY cud.customer_user_data_id
+        `,
+        [user_id]
+      );
+      return rows;
+    } catch (error) {
+      console.error("Model Error - fetchAllCustomerData:", error.message);
+      throw error;
+    }
+  }
 }
 
 module.exports = customerModel;

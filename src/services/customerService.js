@@ -55,5 +55,8 @@ class customerService {
       throw error;
     }
   }
+  static async getAllCustomerData(user_id) {
+    return await customerModel.fetchAllCustomerData(user_id);
+  }
 }
 module.exports = customerService;

@@ -505,5 +505,41 @@ class customerController {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+
+  static async exportAll(req, res) {
+    try {
+      const { user_id } = req.user;
+
+      const rows = await customerService.getAllCustomerData(user_id);
+
+      if (!rows.length) {
+        return res.status(404).json({ message: "No data found to export." });
+      }
+
+      // Process to key-value object for CSV
+      const records = rows.map((row) => {
+        const keys = row.headers.split(",");
+        const values = row.field_values.split(",");
+        const obj = {};
+        keys.forEach((key, i) => {
+          obj[key] = values[i] ?? "";
+        });
+        return obj;
+      });
+
+      const json2csvParser = new Parser();
+      const csv = json2csvParser.parse(records);
+
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=all_customers.csv"
+      );
+      res.set("Content-Type", "text/csv");
+      return res.status(200).send(csv);
+    } catch (error) {
+      console.error("Export All Error:", error.message);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
 }
 module.exports = customerController;

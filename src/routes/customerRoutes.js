@@ -650,5 +650,34 @@ router.post(
   authenticateUser,
   CustomerController.exportSelected
 );
-
+//export all
+/**
+ * @swagger
+ * /customer/export-all:
+ *   get:
+ *     summary: Export all customers as CSV
+ *     tags:
+ *       - Customers
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: CSV file of all customers
+ *         content:
+ *           text/csv:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+router.get("/export-all", authenticateUser, CustomerController.exportAll);
 module.exports = router;
