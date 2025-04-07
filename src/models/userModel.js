@@ -370,11 +370,36 @@ class UserModel {
       throw error;
     }
   }
-  static async setStatusByUserId(userId, status) {
+  static async setStatusByUserId(userId, newStatus) {
     try {
+      // Step 1: Fetch current status
+      const [rows] = await pool.query(
+        `SELECT status FROM users WHERE user_id = ?`,
+        [userId]
+      );
+
+      if (rows.length === 0) {
+        return false; // User not found
+      }
+
+      const currentStatus = rows[0].status;
+
+      // Step 2: Define allowed transitions
+      const allowedTransitions = {
+        0: [1],
+        1: [2],
+        2: [1],
+      };
+
+      // Step 3: Validate the transition
+      if (!allowedTransitions[currentStatus]?.includes(Number(newStatus))) {
+        return false; // Invalid transition
+      }
+
+      // Step 4: Perform the update
       const [result] = await pool.query(
         `UPDATE users SET status = ? WHERE user_id = ?`,
-        [status, userId]
+        [newStatus, userId]
       );
 
       return result.affectedRows > 0;
@@ -383,6 +408,7 @@ class UserModel {
       throw error;
     }
   }
+
   static async resetPassword(token, newPassword) {
     try {
       // Hash the new password

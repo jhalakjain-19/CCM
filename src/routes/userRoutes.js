@@ -386,15 +386,23 @@ router.put(
  *         description: No permissions found
  */
 router.get("/permissions", UserController.getAllPermissions);
-//Route to set status by user_id
+// Route to set status by user_id
 /**
  * @swagger
  * /users/setStatus/{user_id}:
  *   put:
- *     summary: Update user status
+ *     summary: Update user status with restricted transitions
  *     tags:
- *      - Users
- *     description: Set or update the status of a specific user.
+ *       - Users
+ *     description: >
+ *       Set or update the status of a specific user.
+ *       <br><br>
+ *       **Allowed transitions only**:
+ *       - 0 → 1
+ *       - 1 → 2
+ *       - 2 → 1
+ *       <br><br>
+ *       All other transitions (like 1 → 0, 2 → 0, 0 → 2, etc.) are not allowed and will return a 422 response.
  *     parameters:
  *       - in: path
  *         name: user_id
@@ -408,9 +416,12 @@ router.get("/permissions", UserController.getAllPermissions);
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - status
  *             properties:
  *               status:
  *                 type: integer
+ *                 enum: [1, 2]
  *                 example: 1
  *     responses:
  *       200:
@@ -419,9 +430,11 @@ router.get("/permissions", UserController.getAllPermissions);
  *         description: Invalid request, missing user ID or status
  *       404:
  *         description: User not found
+ *       422:
+ *         description: Invalid status transition
  */
-
 router.put("/users/setStatus/:user_id", UserController.setStatusByUserId);
+
 //route for forgot password
 /**
  * @swagger

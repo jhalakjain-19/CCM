@@ -221,19 +221,39 @@ class UserController {
           .json({ error: "User ID and status are required." });
       }
 
+      // Get current status of the user
+      const user = await UserService.getUserById(user_id);
+      if (!user) {
+        return res.status(404).json({ error: "User not found." });
+      }
+
+      const currentStatus = user.status;
+
+      // Validate allowed transitions
+      const allowedTransitions = {
+        0: [1],
+        1: [2],
+        2: [1],
+      };
+
+      const validNextStatuses = allowedTransitions[currentStatus] || [];
+      if (!validNextStatuses.includes(status)) {
+        return res.status(422).json({ error: "Invalid status transition." });
+      }
+
+      // Proceed with update
       const result = await UserService.setStatusByUserId(user_id, status);
 
       if (!result) {
-        return res
-          .status(404)
-          .json({ error: "User not found or update failed." });
+        return res.status(500).json({ error: "Status update failed." });
       }
 
-      res.status(200).json({ message: "User status updated successfully" });
+      res.status(200).json({ message: "User status updated successfully." });
     } catch (error) {
       next(error);
     }
   }
+
   static async forgotPassword(req, res) {
     const { Email } = req.body;
     try {

@@ -1,5 +1,6 @@
 const customerService = require("../services/customerService");
 const pool = require("../config/db");
+const { Parser } = require("json2csv");
 class customerController {
   static handleResponse(res, status, message, data = null) {
     console.log(status);
@@ -440,6 +441,67 @@ class customerController {
       return res.status(200).json({ message: result.message });
     } catch (error) {
       console.error("Error in controller:", error.message);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+  static async exportSelected(req, res) {
+    try {
+      const { user_id } = req.user;
+      const { selectedIds } = req.body;
+
+      if (!Array.isArray(selectedIds) || selectedIds.length === 0) {
+        return res
+          .status(400)
+          .json({ message: "No selected customer IDs provided." });
+      }
+
+      // Convert selectedIds to a string of comma-separated placeholders
+      const placeholders = selectedIds.map(() => "?").join(",");
+
+      // Query to get headers and field values for each customer_user_data_id
+      const [rows] = await pool.query(
+        `
+        SELECT 
+          cud.customer_user_data_id AS id,
+          GROUP_CONCAT(cd.field_name ORDER BY cd.contact_field_id) AS headers,
+          GROUP_CONCAT(cdata.field_value ORDER BY cd.contact_field_id) AS field_values
+        FROM CCMS.customer_user_data cud
+        JOIN CCMS.customer_data cdata ON cud.customer_user_data_id = cdata.customer_user_data_id
+        JOIN CCMS.customer_details cd ON cd.contact_field_id = cdata.contact_field_id
+        WHERE cud.user_id = ? AND cud.customer_user_data_id IN (${placeholders})
+        GROUP BY cud.customer_user_data_id
+        `,
+        [user_id, ...selectedIds]
+      );
+
+      if (!rows.length) {
+        return res
+          .status(404)
+          .json({ message: "No data found for selected IDs." });
+      }
+
+      // Process data into proper object array for CSV
+      const records = rows.map((row) => {
+        const keys = row.headers.split(",");
+        const values = row.field_values.split(",");
+        const obj = {};
+        keys.forEach((key, i) => {
+          obj[key] = values[i] ?? "";
+        });
+        return obj;
+      });
+
+      const json2csvParser = new Parser();
+      const csv = json2csvParser.parse(records);
+
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=selected_customers.csv"
+      );
+      res.set("Content-Type", "text/csv");
+      return res.status(200).send(csv);
+    } catch (error) {
+      console.error("Export Selected Error:", error.message);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }

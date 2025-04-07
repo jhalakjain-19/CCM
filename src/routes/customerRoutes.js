@@ -582,4 +582,73 @@ router.put(
   authenticateUser,
   CustomerController.setOrder
 );
+
+//export selected
+/**
+ * @swagger
+ * /customer/export-selected:
+ *   post:
+ *     summary: Export selected customers as CSV
+ *     tags:
+ *       - Customers
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               selectedIds:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *                 example: [1, 2, 4]
+ *     responses:
+ *       200:
+ *         description: CSV file of selected customers
+ *         content:
+ *           text/csv:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: Bad request if no IDs are passed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: No selected customer IDs provided.
+ *       404:
+ *         description: No matching customer data found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: No data found for selected IDs.
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server Error
+ */
+
+router.post(
+  "/export-selected",
+  authenticateUser,
+  CustomerController.exportSelected
+);
+
 module.exports = router;
