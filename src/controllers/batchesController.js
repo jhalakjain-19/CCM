@@ -12,14 +12,18 @@ class batchController {
   }
   static async createBatch(req, res) {
     try {
-      const { batch_name, parent_batch_id } = req.body;
+      const { user_id } = req.user;
+      const { batch_name } = req.body;
 
       if (!batch_name) {
         return res.status(400).json({ message: "batch_name is required" });
       }
 
+      console.log("Authenticated user:", req.user);
+      console.log(user_id);
       const result = await batchService.createBatch({
         batch_name,
+        user_id,
       });
 
       res.status(201).json({

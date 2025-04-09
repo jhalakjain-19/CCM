@@ -1,13 +1,13 @@
 const pool = require("../config/db");
-const { Op } = require("sequelize");
 class batchModel {
   static async createBatch(batchData) {
     try {
+      console.log("userid", batchData.user_id);
       const insertSql = `
-        INSERT INTO batch (batch_name, parent_batch_id, status, created_on)
-        VALUES (?, null, 1, NOW())
+        INSERT INTO batch (batch_name, parent_batch_id, status, created_on,user_id)
+        VALUES (?, null, 1, NOW(),?)
       `;
-      const values = [batchData.batch_name];
+      const values = [batchData.batch_name, batchData.user_id];
 
       const [insertResult] = await pool.query(insertSql, values);
       const batchId = insertResult.insertId;
