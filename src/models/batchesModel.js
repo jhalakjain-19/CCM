@@ -27,6 +27,16 @@ class batchModel {
     no_of_users_count,
     no_of_users,
   }) {
+    // Enforce condition for data_type 5 or 10
+    if (data_type === 5 || data_type === 10) {
+      if (!criteria_from || !criteria_to) {
+        throw new Error(
+          "criteria_from and criteria_to are required for data_type 5 or 10"
+        );
+      }
+      criteria_search = null; // Force null for these types
+    }
+
     const insertSql = `
       INSERT INTO batch_criteria
       (batch_id, contact_field_id, data_type, criteria_from, criteria_to, criteria_search, no_of_users_count, no_of_users, status, created_on)
