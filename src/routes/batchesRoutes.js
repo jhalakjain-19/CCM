@@ -22,26 +22,21 @@ const batchController = require("../controllers/batchesController.js");
  *             properties:
  *               batch_name:
  *                 type: string
+ *               criteria:
+ *                 type: object
  *             example:
  *               batch_name: "2025 Batch"
+ *               criteria:
+ *                 contact_field_id: 1
+ *                 data_type: 2
+ *                 criteria_from: "A"
+ *                 criteria_to: "Z"
+ *                 criteria_search: "contains"
+ *                 no_of_users_count: 100
+ *                 no_of_users: "some list"
  *     responses:
  *       201:
  *         description: Batch created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 batchId:
- *                   type: integer
- *                 batchCode:
- *                   type: integer
- *               example:
- *                 message: Batch created successfully
- *                 batchId: 5
- *                 batchCode: 5
  *       400:
  *         description: Missing required fields
  *       500:

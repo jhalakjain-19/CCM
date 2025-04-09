@@ -1,24 +1,50 @@
 const pool = require("../config/db");
 class batchModel {
   static async createBatch(batchData) {
-    try {
-      console.log("userid", batchData.user_id);
-      const insertSql = `
-        INSERT INTO batch (batch_name, parent_batch_id, status, created_on,user_id)
-        VALUES (?, null, 1, NOW(),?)
-      `;
-      const values = [batchData.batch_name, batchData.user_id];
+    const insertSql = `
+      INSERT INTO batch (batch_name, parent_batch_id, status, created_on, user_id)
+      VALUES (?, NULL, 1, NOW(), ?)
+    `;
+    const values = [batchData.batch_name, batchData.user_id];
+    const [insertResult] = await pool.query(insertSql, values);
 
-      const [insertResult] = await pool.query(insertSql, values);
-      const batchId = insertResult.insertId;
+    const batchId = insertResult.insertId;
+    await pool.query(`UPDATE batch SET batch_code = ? WHERE batch_id = ?`, [
+      batchId,
+      batchId,
+    ]);
 
-      const updateSql = `UPDATE batch SET batch_code = ? WHERE batch_id = ?`;
-      await pool.query(updateSql, [batchId, batchId]);
+    return { insertId: batchId };
+  }
 
-      return { insertId: batchId };
-    } catch (error) {
-      throw error;
-    }
+  static async insertBatchCriteria({
+    batch_id,
+    contact_field_id,
+    data_type,
+    criteria_from,
+    criteria_to,
+    criteria_search,
+    no_of_users_count,
+    no_of_users,
+  }) {
+    const insertSql = `
+      INSERT INTO batch_criteria
+      (batch_id, contact_field_id, data_type, criteria_from, criteria_to, criteria_search, no_of_users_count, no_of_users, status, created_on)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, NOW())
+    `;
+
+    const values = [
+      batch_id,
+      contact_field_id,
+      data_type,
+      criteria_from,
+      criteria_to,
+      criteria_search,
+      no_of_users_count,
+      no_of_users,
+    ];
+
+    await pool.query(insertSql, values);
   }
 }
 module.exports = batchModel;
