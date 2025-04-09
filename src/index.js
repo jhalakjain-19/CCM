@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes.js");
 const customerRoutes = require("./routes/customerRoutes.js");
+const batchRoutes = require("./routes/batchesRoutes.js");
 const pool = require("./config/db.js");
 const { roleNames } = require("./utils/commonUtils");
 const swaggerJSDoc = require("swagger-jsdoc");
@@ -48,7 +49,11 @@ const options = {
       },
     ],
   },
-  apis: ["./routes/userRoutes.js", "./routes/customerRoutes.js"],
+  apis: [
+    "./routes/userRoutes.js",
+    "./routes/customerRoutes.js",
+    "./routes/batchesRoutes.js",
+  ],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
@@ -56,6 +61,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api", userRoutes);
 app.use("/api/customer", customerRoutes);
+app.use("/api/batch", batchRoutes);
 console.log(`User role is: ${roleNames[1]}`);
 app.use(errorHandler);
 
