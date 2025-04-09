@@ -1,6 +1,6 @@
 const customerService = require("../services/customerService");
 const pool = require("../config/db");
-const { Parser } = require("json2csv");
+const { json2csv } = require("json-2-csv");
 class customerController {
   static handleResponse(res, status, message, data = null) {
     console.log(status);
@@ -455,10 +455,8 @@ class customerController {
           .json({ message: "No selected customer IDs provided." });
       }
 
-      // Convert selectedIds to a string of comma-separated placeholders
       const placeholders = selectedIds.map(() => "?").join(",");
 
-      // Query to get headers and field values for each customer_user_data_id
       const [rows] = await pool.query(
         `
         SELECT 
@@ -480,7 +478,6 @@ class customerController {
           .json({ message: "No data found for selected IDs." });
       }
 
-      // Process data into proper object array for CSV
       const records = rows.map((row) => {
         const keys = row.headers.split(",");
         const values = row.field_values.split(",");
@@ -491,8 +488,7 @@ class customerController {
         return obj;
       });
 
-      const json2csvParser = new Parser();
-      const csv = json2csvParser.parse(records);
+      const csv = await json2csv(records);
 
       res.setHeader(
         "Content-Disposition",
@@ -516,7 +512,6 @@ class customerController {
         return res.status(404).json({ message: "No data found to export." });
       }
 
-      // Process to key-value object for CSV
       const records = rows.map((row) => {
         const keys = row.headers.split(",");
         const values = row.field_values.split(",");
@@ -527,8 +522,7 @@ class customerController {
         return obj;
       });
 
-      const json2csvParser = new Parser();
-      const csv = json2csvParser.parse(records);
+      const csv = await json2csv(records);
 
       res.setHeader(
         "Content-Disposition",
