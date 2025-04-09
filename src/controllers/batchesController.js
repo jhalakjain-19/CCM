@@ -20,7 +20,6 @@ class batchController {
 
       const result = await batchService.createBatch({
         batch_name,
-        parent_batch_id,
       });
 
       res.status(201).json({
@@ -28,6 +27,7 @@ class batchController {
         batchId: result.insertId,
         batchCode: result.insertId, // batch_code = batch_id
       });
+      console.log("Batch created successfully:", result.insertId);
     } catch (error) {
       res
         .status(500)

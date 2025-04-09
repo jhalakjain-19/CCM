@@ -14,12 +14,9 @@ const batchController = require("../controllers/batchesController.js");
  *         batch_name:
  *           type: string
  *           description: The name of the batch
- *         parent_batch_id:
- *           type: integer
- *           description: ID of the parent batch (optional)
+ *
  *       example:
  *         batch_name: "April 2025 Batch"
- *         parent_batch_id: 1
  *
  *     CreateBatchResponse:
  *       type: object

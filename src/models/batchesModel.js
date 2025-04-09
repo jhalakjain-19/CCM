@@ -7,7 +7,7 @@ class batchModel {
         INSERT INTO batch (batch_name, parent_batch_id, status, created_on)
         VALUES (?, null, 1, NOW())
       `;
-      const values = [batchData.batch_name, batchData.parent_batch_id || null];
+      const values = [batchData.batch_name];
 
       const [insertResult] = await pool.query(insertSql, values);
       const batchId = insertResult.insertId;
