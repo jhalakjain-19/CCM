@@ -13,7 +13,7 @@ class batchController {
   static async createBatch(req, res) {
     try {
       const { user_id } = req.user;
-      const { batch_name, criteria } = req.body;
+      const { batch_name, criteriaList } = req.body;
 
       if (!batch_name) {
         return res.status(400).json({ message: "batch_name is required" });
@@ -22,8 +22,10 @@ class batchController {
       const result = await batchService.createBatch({ batch_name, user_id });
       const batch_id = result.insertId;
 
-      if (criteria) {
-        await batchService.insertBatchCriteria({ batch_id, ...criteria });
+      if (criteriaList && Array.isArray(criteriaList)) {
+        for (const criteria of criteriaList) {
+          await batchService.insertBatchCriteria({ batch_id, ...criteria });
+        }
       }
 
       return res.status(201).json({
@@ -32,9 +34,10 @@ class batchController {
         batchCode: batch_id,
       });
     } catch (error) {
-      return res
-        .status(500)
-        .json({ message: "Failed to create batch", error: error.message });
+      return res.status(500).json({
+        message: "Failed to create batch",
+        error: error.message,
+      });
     }
   }
 }
