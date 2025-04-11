@@ -7,7 +7,7 @@ const batchController = require("../controllers/batchesController.js");
  * @swagger
  * /batch/create-batch:
  *   post:
- *     summary: Create a new batch
+ *     summary: Create a new batch based on criteria
  *     tags: [Batch]
  *     security:
  *       - BearerAuth: []
@@ -19,6 +19,7 @@ const batchController = require("../controllers/batchesController.js");
  *             type: object
  *             required:
  *               - batch_name
+ *               - criteriaList
  *             properties:
  *               batch_name:
  *                 type: string
@@ -37,31 +38,11 @@ const batchController = require("../controllers/batchesController.js");
  *                       type: string
  *                     criteria_search:
  *                       type: string
- *                     no_of_users_count:
- *                       type: integer
- *                     no_of_users:
- *                       type: string
- *             example:
- *               batch_name: "2025 Batch"
- *               criteriaList:
- *                 - contact_field_id: 1
- *                   data_type: 2
- *                   criteria_from: "A"
- *                   criteria_to: "Z"
- *                   criteria_search: "contains"
- *                   no_of_users_count: 100
- *                   no_of_users: "some list"
- *                 - contact_field_id: 2
- *                   data_type: 5
- *                   criteria_from: "10"
- *                   criteria_to: "100"
- *                   no_of_users_count: 50
- *                   no_of_users: "another list"
  *     responses:
  *       201:
  *         description: Batch created successfully
  *       400:
- *         description: Missing required fields
+ *         description: Missing batch_name or criteriaList
  *       500:
  *         description: Internal server error
  */
